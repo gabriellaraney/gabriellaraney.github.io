@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: layout
 title: "Test Research"
 date: 2025-06-16
 ---

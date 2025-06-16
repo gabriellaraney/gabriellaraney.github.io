@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: layout
 title: "Test Book Review"
 date: 2025-06-16
 ---

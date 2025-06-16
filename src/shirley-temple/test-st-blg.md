@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: layout
 title: "Test Shirley Temple Blog"
 date: 2025-06-16
 ---

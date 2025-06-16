@@ -1,5 +1,5 @@
 ---
-layout: layout.njk
+layout: layout
 title: "Test Stock Pitch"
 date: 2025-06-16
 ---
