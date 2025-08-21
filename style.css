@@ -18,11 +18,24 @@ header h1 {
   font-size: 2.5rem;
 }
 
-nav a {
-  margin: 0 10px;
+.navbar {
+  background-color: #ffe4f0;
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 2px solid #f8bcd0;
+}
+
+.navbar a {
+  margin: 0 15px;
   text-decoration: none;
   color: #444;
   font-weight: bold;
+  font-size: 1.1rem;
+  transition: color 0.3s;
+}
+
+.navbar a:hover {
+  color: #d46a92;
 }
 
 section {
