@@ -1,0 +1,48 @@
+body {
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #fffafc;
+  color: #333;
+}
+
+header {
+  text-align: center;
+  padding: 2rem;
+  background: #ffe4f0;
+  border-bottom: 3px solid #f8bcd0;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #444;
+  font-weight: bold;
+}
+
+section {
+  padding: 2rem;
+  max-width: 700px;
+  margin: auto;
+}
+
+h2 {
+  color: #d46a92;
+}
+
+ul li {
+  margin-bottom: 0.5rem;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: #ffe4f0;
+  border-top: 3px solid #f8bcd0;
+  font-size: 0.9rem;
+}
