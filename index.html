@@ -92,32 +92,21 @@
     // --- FRED Data ---
     async function fetchFRED(seriesId, elementId, chartId) {
     try {
-      const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
+      const url = `/.netlify/functions/fred?series=${seriesId}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error("FRED request failed");
-
       const data = await res.json();
 
-      if (!data.observations || data.observations.length === 0) {
+      const validObs = (data.observations || [])
+        .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)));
+
+      if (validObs.length === 0) {
         document.getElementById(elementId).innerText = "No data";
         return;
       }
 
-      // filter out missing values
-      const validObs = data.observations.filter(
-        o => o.value !== "." && !isNaN(parseFloat(o.value))
-      );
-
-      if (validObs.length === 0) {
-        document.getElementById(elementId).innerText = "No valid data";
-        return;
-      }
-
-      // latest value
       const last = validObs.at(-1);
       document.getElementById(elementId).innerText = parseFloat(last.value).toFixed(2);
 
-      // last 20 points for chart
       const recent = validObs.slice(-20);
       const labels = recent.map(o => o.date);
       const values = recent.map(o => parseFloat(o.value));
@@ -137,10 +126,11 @@
         options: { scales: { x: { display: false } } }
       });
     } catch (err) {
-      console.error("FRED error for", seriesId, err);
+      console.error("Frontend FRED error:", err);
       document.getElementById(elementId).innerText = "Error";
     }
   }
+
 
     // --- Yahoo Finance (via Netlify Function Proxy) ---
     async function fetchYahoo(symbol, elementId, chartId) {
