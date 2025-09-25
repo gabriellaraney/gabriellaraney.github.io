@@ -11,52 +11,52 @@
   <header>
     Economic Dashboard
     <div id="lastUpdated"></div>
-    <div class="badge"> Market data cached for 30 minutes — numbers may not update every refresh</div>
+    <div class="badge">Market data cached for 30 minutes — numbers may not update every refresh</div>
   </header>
 
   <!-- Macroeconomic Data -->
   <h2 class="section-header">Macroeconomic Data</h2>
   <h3 class="sub-header">Growth & Inflation</h3>
   <div class="container">
-    <div class="card"><h2>GDP (🇺🇸 USA) <span class="ticker">[GDP]</span></h2><p id="gdp" class="value">Loading...</p><canvas id="gdpChart"></canvas></div>
-    <div class="card"><h2>Unemployment (🇺🇸 USA) <span class="ticker">[UNRATE]</span></h2><p id="unrate" class="value">Loading...</p><canvas id="unrateChart"></canvas></div>
-    <div class="card"><h2>CPI Inflation YoY (🇺🇸 USA) <span class="ticker">[CPIAUCSL]</span></h2><p id="cpi" class="value">Loading...</p><canvas id="cpiChart"></canvas></div>
-    <div class="card"><h2>PCE Inflation YoY (🇺🇸 USA) <span class="ticker">[PCEPI]</span></h2><p id="pce" class="value">Loading...</p><canvas id="pceChart"></canvas></div>
-    <div class="card"><h2>PPI Inflation YoY (🇺🇸 USA) <span class="ticker">[PPIACO]</span></h2><p id="ppi" class="value">Loading...</p><canvas id="ppiChart"></canvas></div>
+    <div class="card"><h2>GDP (US)</h2><span class="ticker-tag">GDP</span><p id="gdp" class="value">Loading...</p><canvas id="gdpChart"></canvas></div>
+    <div class="card"><h2>Unemployment (US)</h2><span class="ticker-tag">UNRATE</span><p id="unrate" class="value">Loading...</p><canvas id="unrateChart"></canvas></div>
+    <div class="card"><h2>CPI Inflation YoY (US)</h2><span class="ticker-tag">CPIAUCSL</span><p id="cpi" class="value">Loading...</p><canvas id="cpiChart"></canvas></div>
+    <div class="card"><h2>PCE Inflation YoY (US)</h2><span class="ticker-tag">PCEPI</span><p id="pce" class="value">Loading...</p><canvas id="pceChart"></canvas></div>
+    <div class="card"><h2>PPI Inflation YoY (US)</h2><span class="ticker-tag">PPIACO</span><p id="ppi" class="value">Loading...</p><canvas id="ppiChart"></canvas></div>
   </div>
 
   <h2 class="section-header">Macroeconomic Data</h2>
   <h3 class="sub-header">Rates & Expectations</h3>
   <div class="container">
-    <div class="card"><h2>SOFR (🇺🇸) <span class="ticker">[SOFR]</span></h2><p id="sofr" class="value">Loading...</p><canvas id="sofrChart"></canvas></div>
-    <div class="card"><h2>Fed Funds Rate (🇺🇸) <span class="ticker">[FEDFUNDS]</span></h2><p id="fedfunds" class="value">Loading...</p><canvas id="fedfundsChart"></canvas></div>
-    <div class="card"><h2>10Y Treasury Yield (🇺🇸, live)</h2><p id="gs10" class="value">Loading...</p><canvas id="gs10Chart"></canvas></div>
-    <div class="card"><h2>5Y Breakeven Inflation (🇺🇸) <span class="ticker">[T5YIE]</span></h2><p id="t5yie" class="value">Loading...</p><canvas id="t5yieChart"></canvas></div>
+    <div class="card"><h2>SOFR (US)</h2><span class="ticker-tag">SOFR</span><p id="sofr" class="value">Loading...</p><canvas id="sofrChart"></canvas></div>
+    <div class="card"><h2>Fed Funds Rate (US)</h2><span class="ticker-tag">FEDFUNDS</span><p id="fedfunds" class="value">Loading...</p><canvas id="fedfundsChart"></canvas></div>
+    <div class="card"><h2>10Y Treasury Yield (US)</h2><span class="ticker-tag">^TNX</span><p id="gs10" class="value">Loading...</p><canvas id="gs10Chart"></canvas></div>
+    <div class="card"><h2>5Y Breakeven Inflation (US)</h2><span class="ticker-tag">T5YIE</span><p id="t5yie" class="value">Loading...</p><canvas id="t5yieChart"></canvas></div>
   </div>
 
   <!-- Market Indexes -->
   <h2 class="section-header">Market Indexes</h2>
   <h3 class="sub-header">US</h3>
   <div class="container">
-    <div class="card"><h2>S&P 500 (🇺🇸)</h2><p id="sp500" class="value">Loading...</p><canvas id="sp500Chart"></canvas></div>
-    <div class="card"><h2>Dow Jones (🇺🇸)</h2><p id="dji" class="value">Loading...</p><canvas id="djiChart"></canvas></div>
-    <div class="card"><h2>Nasdaq (🇺🇸)</h2><p id="ixic" class="value">Loading...</p><canvas id="ixicChart"></canvas></div>
-    <div class="card"><h2>Russell 2000 (🇺🇸)</h2><p id="rut" class="value">Loading...</p><canvas id="rutChart"></canvas></div>
+    <div class="card"><h2>S&P 500</h2><span class="ticker-tag">^GSPC</span><p id="sp500" class="value">Loading...</p><canvas id="sp500Chart"></canvas></div>
+    <div class="card"><h2>Dow Jones</h2><span class="ticker-tag">^DJI</span><p id="dji" class="value">Loading...</p><canvas id="djiChart"></canvas></div>
+    <div class="card"><h2>Nasdaq</h2><span class="ticker-tag">^IXIC</span><p id="ixic" class="value">Loading...</p><canvas id="ixicChart"></canvas></div>
+    <div class="card"><h2>Russell 2000</h2><span class="ticker-tag">^RUT</span><p id="rut" class="value">Loading...</p><canvas id="rutChart"></canvas></div>
   </div>
 
   <h2 class="section-header">Market Indexes</h2>
   <h3 class="sub-header">Global</h3>
   <div class="container">
-    <div class="card"><h2>FTSE 100 (🇬🇧 UK)</h2><p id="ftse" class="value">Loading...</p><canvas id="ftseChart"></canvas></div>
-    <div class="card"><h2>Nikkei 225 (🇯🇵 JP)</h2><p id="n225" class="value">Loading...</p><canvas id="n225Chart"></canvas></div>
-    <div class="card"><h2>DAX (🇩🇪 DE)</h2><p id="gdaxi" class="value">Loading...</p><canvas id="gdaxiChart"></canvas></div>
-    <div class="card"><h2>Hang Seng (🇭🇰 HK)</h2><p id="hsi" class="value">Loading...</p><canvas id="hsiChart"></canvas></div>
-    <div class="card"><h2>Shanghai Composite (🇨🇳 CN)</h2><p id="shcomp" class="value">Loading...</p><canvas id="shcompChart"></canvas></div>
+    <div class="card"><h2>FTSE 100 (UK)</h2><span class="ticker-tag">^FTSE</span><p id="ftse" class="value">Loading...</p><canvas id="ftseChart"></canvas></div>
+    <div class="card"><h2>Nikkei 225 (Japan)</h2><span class="ticker-tag">^N225</span><p id="n225" class="value">Loading...</p><canvas id="n225Chart"></canvas></div>
+    <div class="card"><h2>DAX (Germany)</h2><span class="ticker-tag">^GDAXI</span><p id="gdaxi" class="value">Loading...</p><canvas id="gdaxiChart"></canvas></div>
+    <div class="card"><h2>Hang Seng (Hong Kong)</h2><span class="ticker-tag">^HSI</span><p id="hsi" class="value">Loading...</p><canvas id="hsiChart"></canvas></div>
+    <div class="card"><h2>Shanghai Composite (China)</h2><span class="ticker-tag">000001.SS</span><p id="shcomp" class="value">Loading...</p><canvas id="shcompChart"></canvas></div>
   </div>
 
   <script>
     const FRED_BASE = "https://econ-dashboard.gabbyraney.workers.dev";
-    const NETLIFY_FN_BASE = "https://gabriellaraney.netlify.app/.netlify/functions"; // replace
+    const NETLIFY_FN_BASE = "https://gabriellaraney.netlify.app/.netlify/functions";
 
     document.getElementById("lastUpdated").innerText = "Last updated: " + new Date().toLocaleString();
 
@@ -80,10 +80,8 @@
           const obs = (data[seriesId] || [])
             .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)))
             .map(o => ({ date: o.date, value: parseFloat(o.value) }));
-          if (!obs.length) {
-            document.getElementById(elId).innerText = "No data";
-            return;
-          }
+          if (!obs.length) { document.getElementById(elId).innerText = "No data"; return; }
+
           const latest = obs[obs.length - 1].value;
           document.getElementById(elId).innerText = formatNumber(latest, type);
 
@@ -143,9 +141,16 @@
 
             if (meta.ytd) {
               const ytd = ((last - first) / first) * 100;
-              el.innerHTML = `<span style="color:${ytd >= 0 ? 'green' : 'red'};">${ytd.toFixed(5)}% YTD</span><br>${formatNumber(last, meta.type)}<br><small style="color:#777">Source: Yahoo</small>`;
+              el.innerHTML = `
+                <span style="color:${ytd >= 0 ? 'green' : 'red'};">${ytd.toFixed(5)}% YTD</span>
+                ${formatNumber(last, meta.type)}
+                <span class="source">Source: Yahoo</span>
+              `;
             } else {
-              el.innerHTML = `${formatNumber(last, "percent")}<br><small style="color:#777">Source: Yahoo</small>`;
+              el.innerHTML = `
+                ${formatNumber(last, "percent")}
+                <span class="source">Source: Yahoo</span>
+              `;
             }
 
             new Chart(document.getElementById(meta.chart), {
@@ -159,11 +164,11 @@
             const last = rec.meta.regularMarketPrice;
             const pct = rec.meta.changesPercentage || 0;
 
-            if (meta.ytd) {
-              el.innerHTML = `<span style="color:${pct >= 0 ? 'green' : 'red'};">${pct.toFixed(5)}% Δ</span><br>${formatNumber(last, meta.type)}<br><small style="color:#777">Source: FMP (fallback)</small>`;
-            } else {
-              el.innerHTML = `${formatNumber(last, meta.type)}<br><small style="color:#777">Source: FMP (fallback)</small>`;
-            }
+            el.innerHTML = `
+              <span style="color:${pct >= 0 ? 'green' : 'red'};">${pct.toFixed(5)}% Δ</span>
+              ${formatNumber(last, meta.type)}
+              <span class="source">Source: FMP (fallback)</span>
+            `;
 
             new Chart(document.getElementById(meta.chart), {
               type: "line",
