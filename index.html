@@ -14,8 +14,10 @@
   </header>
 
   <!-- Macro Data Section -->
-  <h1 style="margin:1rem 0;">Macro Data</h1>
-  <div class="container" id="macro-container">
+  <h2 class="section-header">Macro Data</h2>
+
+  <h3 class="sub-header">Growth & Inflation</h3>
+  <div class="container">
     <div class="card">
       <h2>GDP (USA)</h2>
       <p id="gdp" class="value">Loading...</p>
@@ -41,6 +43,20 @@
       <p id="ppi" class="value">Loading...</p>
       <canvas id="ppiChart"></canvas>
     </div>
+  </div>
+
+  <h3 class="sub-header">Rates & Expectations</h3>
+  <div class="container">
+    <div class="card">
+      <h2>SOFR (USA)</h2>
+      <p id="sofr" class="value">Loading...</p>
+      <canvas id="sofrChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Fed Funds Rate (USA)</h2>
+      <p id="fedfunds" class="value">Loading...</p>
+      <canvas id="fedfundsChart"></canvas>
+    </div>
     <div class="card">
       <h2>10Y Treasury Yield (USA)</h2>
       <p id="gs10" class="value">Loading...</p>
@@ -54,8 +70,10 @@
   </div>
 
   <!-- Market Indexes Section -->
-  <h1 style="margin:1rem 0;">Market Indexes</h1>
-  <div class="container" id="indexes-container">
+  <h2 class="section-header">Market Indexes</h2>
+
+  <h3 class="sub-header">US Indexes</h3>
+  <div class="container">
     <div class="card">
       <h2>S&P 500 (USA)</h2>
       <p id="sp500" class="value">Loading...</p>
@@ -76,8 +94,10 @@
       <p id="rut" class="value">Loading...</p>
       <canvas id="rutChart"></canvas>
     </div>
+  </div>
 
-    <!-- Global Indexes -->
+  <h3 class="sub-header">Global Indexes</h3>
+  <div class="container">
     <div class="card">
       <h2>FTSE 100 (UK)</h2>
       <p id="ftse" class="value">Loading...</p>
@@ -105,12 +125,12 @@
     </div>
   </div>
 
+  <!-- Scripts -->
   <script>
     // --- Last updated ---
     document.getElementById("lastUpdated").innerText =
       "Last updated: " + new Date().toLocaleString();
 
-    // --- Number formatting helper ---
     function formatNumber(value, type="number") {
       if (value == null || isNaN(value)) return "N/A";
       switch (type) {
@@ -122,7 +142,6 @@
       }
     }
 
-    // --- FRED fetch ---
     async function fetchFRED(seriesId, elementId, chartId, options = {}) {
       const { displayType="number", transform=null } = options;
       try {
@@ -161,7 +180,6 @@
       }
     }
 
-    // --- Yahoo fetch ---
     async function fetchYahoo(symbol, elementId, chartId, options = {}) {
       const { displayType="index", showYTD=true } = options;
       try {
@@ -199,14 +217,20 @@
     fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
     fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
     fetchFRED("PPIACO", "ppi", "ppiChart", { displayType: "percent", transform: "yoy" });
+    fetchFRED("SOFR", "sofr", "sofrChart", { displayType: "percent" });
+    fetchFRED("FEDFUNDS", "fedfunds", "fedfundsChart", { displayType: "percent" });
 
     // --- Load Yahoo Indicators ---
     fetchYahoo("^TNX", "gs10", "gs10Chart", { displayType: "percent", showYTD: false });
     fetchYahoo("TIP", "t5yie", "t5yieChart", { displayType: "index", showYTD: true });
+
+    // --- Load US Indexes ---
     fetchYahoo("^GSPC", "sp500", "sp500Chart");
     fetchYahoo("^DJI",  "dji", "djiChart");
     fetchYahoo("^IXIC", "ixic", "ixicChart");
     fetchYahoo("^RUT",  "rut", "rutChart");
+
+    // --- Load Global Indexes ---
     fetchYahoo("^FTSE", "ftse", "ftseChart");
     fetchYahoo("^N225", "n225", "n225Chart");
     fetchYahoo("^GDAXI","gdaxi","gdaxiChart");
