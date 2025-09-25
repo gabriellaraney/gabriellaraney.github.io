@@ -1,48 +1,41 @@
 body {
-  font-family: 'Arial Rounded MT Bold', sans-serif;
+  font-family: 'Arial', sans-serif;
+  background-color: #fff0f6;
+  color: #333;
   margin: 0;
   padding: 0;
-  background: #fffafc;
-  color: #333;
+  text-align: center;
 }
 
 header {
-  text-align: center;
-  padding: 2rem;
-  background: #ffe4f0;
-  border-bottom: 3px solid #f8bcd0;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-}
-
-nav a {
-  margin: 0 10px;
-  text-decoration: none;
-  color: #444;
-  font-weight: bold;
-}
-
-section {
-  padding: 2rem;
-  max-width: 700px;
-  margin: auto;
-}
-
-h2 {
-  color: #d46a92;
-}
-
-ul li {
-  margin-bottom: 0.5rem;
-}
-
-footer {
-  text-align: center;
+  background: #ff99cc;
   padding: 1rem;
-  background: #ffe4f0;
-  border-top: 3px solid #f8bcd0;
-  font-size: 0.9rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 1rem;
+}
+
+.card {
+  background: white;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  width: 300px;
+}
+
+.card h2 {
+  color: #cc0066;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
 }

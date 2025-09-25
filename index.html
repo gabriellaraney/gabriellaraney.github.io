@@ -1,44 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gabriella Raney | Portfolio</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Economic Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Hi, I’m Gabriella ✨</h1>
-    <p>CS + Economics @ Ohio State | Aspiring Quant & S&T</p>
-    <nav>
-      <a href="#about">About</a>
-      <a href="#projects">Projects</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
+  <header>Economic Dashboard</header>
 
-  <section id="about">
-    <h2>About Me</h2>
-    <p>I’m passionate about financial markets, quantitative research, and building algorithmic strategies at the intersection of CS + Economics.</p>
-  </section>
+  <div class="container" id="data-container">
+    <div class="card">
+      <h2>GDP</h2>
+      <p id="gdp">Loading...</p>
+      <canvas id="gdpChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Unemployment</h2>
+      <p id="unrate">Loading...</p>
+      <canvas id="unrateChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>CPI</h2>
+      <p id="cpi">Loading...</p>
+      <canvas id="cpiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>10Y Treasury</h2>
+      <p id="gs10">Loading...</p>
+      <canvas id="gs10Chart"></canvas>
+    </div>
+    <div class="card">
+      <h2>S&P 500</h2>
+      <p id="sp500">Loading...</p>
+      <canvas id="sp500Chart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Dow Jones</h2>
+      <p id="dji">Loading...</p>
+      <canvas id="djiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Nasdaq</h2>
+      <p id="ixic">Loading...</p>
+      <canvas id="ixicChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Russell 2000</h2>
+      <p id="rut">Loading...</p>
+      <canvas id="rutChart"></canvas>
+    </div>
+        <div class="card">
+      <h2>5Y Inflation Expectation</h2>
+      <p id="t5yie">Loading...</p>
+      <canvas id="t5yieChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>FTSE 100 (UK)</h2>
+      <p id="ftse">Loading...</p>
+      <canvas id="ftseChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Nikkei 225 (Japan)</h2>
+      <p id="n225">Loading...</p>
+      <canvas id="n225Chart"></canvas>
+    </div>
+    <div class="card">
+      <h2>DAX (Germany)</h2>
+      <p id="gdaxi">Loading...</p>
+      <canvas id="gdaxiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Hang Seng (Hong Kong)</h2>
+      <p id="hsi">Loading...</p>
+      <canvas id="hsiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Shanghai Composite (China)</h2>
+      <p id="shcomp">Loading...</p>
+      <canvas id="shcompChart"></canvas>
+    </div>
+  </div>
 
-  <section id="projects">
-    <h2>Projects</h2>
-    <ul>
-      <li><b>Chevron Stock Pitch</b> – Macro & fundamental analysis.</li>
-      <li><b>IMC Prosperity Challenge</b> – Designed trading strategies for options & commodities.</li>
-      <li><b>Data Science Internship</b> – Predictive modeling for business development.</li>
-    </ul>
-  </section>
+  <script>
+    const FRED_API_KEY = "c5d6f351f39d10c302ebc99648038d4a";
 
-  <section id="contact">
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:raney.51@osu.edu">raney.51@osu.edu</a></p>
-    <p><a href="https://www.linkedin.com/in/gabriella-raney">LinkedIn</a> | Resume coming soon!</p>
-  </section>
+    async function fetchFRED(seriesId, elementId, chartId) {
+      const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const observations = data.observations.filter(o => o.value !== ".").slice(-20); // last 20 points
+      const labels = observations.map(o => o.date);
+      const values = observations.map(o => parseFloat(o.value));
 
-  <footer>
-    <p>© 2025 Gabriella Raney</p>
-  </footer>
+      // latest value
+      document.getElementById(elementId).innerText = values[values.length - 1];
+
+      // chart
+      new Chart(document.getElementById(chartId), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: seriesId,
+            data: values,
+            borderColor: "#cc0066",
+            fill: false,
+            tension: 0.2
+          }]
+        },
+        options: { scales: { x: { display: false } } }
+      });
+    }
+
+    // Major FRED indicators
+    fetchFRED("GDP", "gdp", "gdpChart");
+    fetchFRED("UNRATE", "unrate", "unrateChart");
+    fetchFRED("CPIAUCSL", "cpi", "cpiChart");
+    fetchFRED("GS10", "gs10", "gs10Chart");
+    
+    // FRED Inflation Expectations
+    fetchFRED("T5YIE", "t5yie", "t5yieChart");
+
+    // Global Indexes via Yahoo
+    fetchYahoo("^FTSE", "ftse", "ftseChart");       // UK
+    fetchYahoo("^N225", "n225", "n225Chart");       // Japan
+    fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");    // Germany
+    fetchYahoo("^HSI", "hsi", "hsiChart");          // Hong Kong
+    fetchYahoo("000001.SS", "shcomp", "shcompChart"); // China
+
+
+    // Yahoo Finance indexes
+    async function fetchYahoo(symbol, elementId, chartId) {
+      try {
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1mo`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const result = data.chart.result[0];
+        const values = result.indicators.quote[0].close;
+        const timestamps = result.timestamp.map(t => new Date(t * 1000).toLocaleDateString());
+
+        document.getElementById(elementId).innerText = values[values.length - 1].toFixed(2);
+
+        new Chart(document.getElementById(chartId), {
+          type: "line",
+          data: {
+            labels: timestamps,
+            datasets: [{
+              label: symbol,
+              data: values,
+              borderColor: "#ff3399",
+              fill: false,
+              tension: 0.2
+            }]
+          },
+          options: { scales: { x: { display: false } } }
+        });
+      } catch (err) {
+        document.getElementById(elementId).innerText = "Error";
+      }
+    }
+
+    fetchYahoo("^GSPC", "sp500", "sp500Chart");
+    fetchYahoo("^DJI", "dji", "djiChart");
+    fetchYahoo("^IXIC", "ixic", "ixicChart");
+    fetchYahoo("^RUT", "rut", "rutChart");
+  </script>
 </body>
 </html>
