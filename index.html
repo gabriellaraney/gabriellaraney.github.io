@@ -28,59 +28,61 @@
       <canvas id="cpiChart"></canvas>
     </div>
     <div class="card">
-      <h2>10Y Treasury Yield</h2>
+      <h2>10Y Treasury Yield (Live)</h2>
       <p id="gs10" class="value">Loading...</p>
       <canvas id="gs10Chart"></canvas>
     </div>
     <div class="card">
-      <h2>5Y Inflation Expectation</h2>
+      <h2>5Y Inflation Expectation (Proxy: TIPS)</h2>
       <p id="t5yie" class="value">Loading...</p>
       <canvas id="t5yieChart"></canvas>
     </div>
 
-    <!-- Market Indexes via Yahoo -->
+    <!-- Market Indexes -->
     <div class="card">
-      <h2>S&P 500</h2>
+      <h2>S&P 500 (🇺🇸)</h2>
       <p id="sp500" class="value">Loading...</p>
       <canvas id="sp500Chart"></canvas>
     </div>
     <div class="card">
-      <h2>Dow Jones</h2>
+      <h2>Dow Jones (🇺🇸)</h2>
       <p id="dji" class="value">Loading...</p>
       <canvas id="djiChart"></canvas>
     </div>
     <div class="card">
-      <h2>Nasdaq</h2>
+      <h2>Nasdaq (🇺🇸)</h2>
       <p id="ixic" class="value">Loading...</p>
       <canvas id="ixicChart"></canvas>
     </div>
     <div class="card">
-      <h2>Russell 2000</h2>
+      <h2>Russell 2000 (🇺🇸)</h2>
       <p id="rut" class="value">Loading...</p>
       <canvas id="rutChart"></canvas>
     </div>
+
+    <!-- Global Indexes -->
     <div class="card">
-      <h2>FTSE 100 🇬🇧</h2>
+      <h2>FTSE 100 (🇬🇧 UK)</h2>
       <p id="ftse" class="value">Loading...</p>
       <canvas id="ftseChart"></canvas>
     </div>
     <div class="card">
-      <h2>Nikkei 225 🇯🇵</h2>
+      <h2>Nikkei 225 (🇯🇵 Japan)</h2>
       <p id="n225" class="value">Loading...</p>
       <canvas id="n225Chart"></canvas>
     </div>
     <div class="card">
-      <h2>DAX 🇩🇪</h2>
+      <h2>DAX (🇩🇪 Germany)</h2>
       <p id="gdaxi" class="value">Loading...</p>
       <canvas id="gdaxiChart"></canvas>
     </div>
     <div class="card">
-      <h2>Hang Seng 🇭🇰</h2>
+      <h2>Hang Seng (🇭🇰 Hong Kong)</h2>
       <p id="hsi" class="value">Loading...</p>
       <canvas id="hsiChart"></canvas>
     </div>
     <div class="card">
-      <h2>Shanghai Composite 🇨🇳</h2>
+      <h2>Shanghai Composite (🇨🇳 China)</h2>
       <p id="shcomp" class="value">Loading...</p>
       <canvas id="shcompChart"></canvas>
     </div>
@@ -89,51 +91,66 @@
   <script>
     const FRED_API_KEY = "c5d6f351f39d10c302ebc99648038d4a";
 
-    // --- FRED Data ---
-    async function fetchFRED(seriesId, elementId, chartId) {
-    try {
-      const url = `/.netlify/functions/fred?series=${seriesId}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      const validObs = (data.observations || [])
-        .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)));
-
-      if (validObs.length === 0) {
-        document.getElementById(elementId).innerText = "No data";
-        return;
+    // --- Number formatting helper ---
+    function formatNumber(value, type="number") {
+      if (value == null || isNaN(value)) return "N/A";
+      switch (type) {
+        case "money":
+          return `$${(value/1000).toFixed(1)}T`; // FRED GDP is in billions
+        case "percent":
+          return value.toFixed(2) + "%";
+        case "index":
+          return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        default:
+          return value.toFixed(2);
       }
-
-      const last = validObs.at(-1);
-      document.getElementById(elementId).innerText = parseFloat(last.value).toFixed(2);
-
-      const recent = validObs.slice(-20);
-      const labels = recent.map(o => o.date);
-      const values = recent.map(o => parseFloat(o.value));
-
-      new Chart(document.getElementById(chartId), {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: seriesId,
-            data: values,
-            borderColor: "#cc0066",
-            fill: false,
-            tension: 0.2
-          }]
-        },
-        options: { scales: { x: { display: false } } }
-      });
-    } catch (err) {
-      console.error("Frontend FRED error:", err);
-      document.getElementById(elementId).innerText = "Error";
     }
-  }
 
+    // --- FRED Data via Netlify Proxy ---
+    async function fetchFRED(seriesId, elementId, chartId, type="number") {
+      try {
+        const url = `/.netlify/functions/fred?series=${seriesId}`;
+        const res = await fetch(url);
+        const data = await res.json();
 
-    // --- Yahoo Finance (via Netlify Function Proxy) ---
-    async function fetchYahoo(symbol, elementId, chartId) {
+        const validObs = (data.observations || [])
+          .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)));
+
+        if (validObs.length === 0) {
+          document.getElementById(elementId).innerText = "No data";
+          return;
+        }
+
+        const last = validObs.at(-1);
+        const lastVal = parseFloat(last.value);
+        document.getElementById(elementId).innerText = formatNumber(lastVal, type);
+
+        const recent = validObs.slice(-20);
+        const labels = recent.map(o => o.date);
+        const values = recent.map(o => parseFloat(o.value));
+
+        new Chart(document.getElementById(chartId), {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: seriesId,
+              data: values,
+              borderColor: "#cc0066",
+              fill: false,
+              tension: 0.2
+            }]
+          },
+          options: { scales: { x: { display: false } } }
+        });
+      } catch (err) {
+        console.error("FRED error", seriesId, err);
+        document.getElementById(elementId).innerText = "Error";
+      }
+    }
+
+    // --- Yahoo Finance via Netlify Proxy ---
+    async function fetchYahoo(symbol, elementId, chartId, type="index") {
       try {
         const url = `/.netlify/functions/yahoo?symbol=${symbol}`;
         const res = await fetch(url);
@@ -143,14 +160,14 @@
         const prices = result.indicators.quote[0].close.filter(v => v != null);
         const timestamps = result.timestamp.map(t => new Date(t * 1000).toLocaleDateString());
 
-        const firstValue = prices[0];
-        const lastValue = prices[prices.length - 1];
-        const pctChange = ((lastValue - firstValue) / firstValue) * 100;
+        const firstVal = prices[0];
+        const lastVal = prices[prices.length - 1];
+        const pctChange = ((lastVal - firstVal) / firstVal) * 100;
 
         document.getElementById(elementId).innerHTML =
           `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
             ${pctChange.toFixed(2)}% YTD
-          </span><br>${lastValue.toFixed(2)}`;
+          </span><br>${formatNumber(lastVal, type)}`;
 
         new Chart(document.getElementById(chartId), {
           type: "line",
@@ -172,23 +189,27 @@
       }
     }
 
-    // Load FRED Indicators
-    fetchFRED("GDP", "gdp", "gdpChart");
-    fetchFRED("UNRATE", "unrate", "unrateChart");
-    fetchFRED("CPIAUCSL", "cpi", "cpiChart");
-    fetchFRED("GS10", "gs10", "gs10Chart");
-    fetchFRED("T5YIE", "t5yie", "t5yieChart");
+    // --- Load FRED Series ---
+    fetchFRED("GDP", "gdp", "gdpChart", "money");
+    fetchFRED("UNRATE", "unrate", "unrateChart", "percent");
+    fetchFRED("CPIAUCSL", "cpi", "cpiChart", "percent");
+    // skip GS10 (monthly), use live Yahoo ^TNX below
+    // FRED inflation expectations available, but using TIPS ETF proxy instead
 
-    // Load Yahoo Indexes
+    // --- Load Yahoo Series (indexes + yields) ---
+    fetchYahoo("^TNX", "gs10", "gs10Chart", "percent");  // Live 10Y yield
+    fetchYahoo("TIP", "t5yie", "t5yieChart");            // Inflation proxy (TIPS ETF)
+
     fetchYahoo("^GSPC", "sp500", "sp500Chart");   // S&P 500
     fetchYahoo("^DJI", "dji", "djiChart");        // Dow
     fetchYahoo("^IXIC", "ixic", "ixicChart");     // Nasdaq
     fetchYahoo("^RUT", "rut", "rutChart");        // Russell 2000
-    fetchYahoo("^FTSE", "ftse", "ftseChart");     // FTSE
-    fetchYahoo("^N225", "n225", "n225Chart");     // Nikkei
-    fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");  // DAX
+
+    fetchYahoo("^FTSE", "ftse", "ftseChart");     // FTSE 100 UK
+    fetchYahoo("^N225", "n225", "n225Chart");     // Nikkei Japan
+    fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");  // DAX Germany
     fetchYahoo("^HSI", "hsi", "hsiChart");        // Hang Seng
-    fetchYahoo("000001.SS", "shcomp", "shcompChart"); // Shanghai
+    fetchYahoo("000001.SS", "shcomp", "shcompChart"); // Shanghai Composite
   </script>
 </body>
 </html>
