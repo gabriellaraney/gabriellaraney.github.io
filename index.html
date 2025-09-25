@@ -250,7 +250,7 @@
         if (showYTD) {
           const pctChange = ((lastVal - firstVal) / firstVal) * 100;
           document.getElementById(elementId).innerHTML =
-            `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">${pctChange.toFixed(2)}% YTD</span><br>${formatNumber(lastVal, displayType)}`;
+            `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">${pctChange.toFixed(5)}% YTD</span><br>${formatNumber(lastVal, displayType)}`;
         } else {
           document.getElementById(elementId).innerText = formatNumber(lastVal, displayType);
         }
