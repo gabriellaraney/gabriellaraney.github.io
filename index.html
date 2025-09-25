@@ -178,10 +178,10 @@
     function formatNumber(value, type="number") {
       if (value == null || isNaN(value)) return "N/A";
       switch (type) {
-        case "money": return `$${(value/1000).toFixed(1)}T`;
-        case "percent": return value.toFixed(2) + "%";
-        case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        default: return value.toFixed(2);
+        case "money": return `$${(value/1000).toFixed(5)}T`;
+        case "percent": return value.toFixed(5) + "%";
+        case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 5, maximumFractionDigits: 5 });
+        default: return value.toFixed(5);
       }
     }
 
@@ -213,7 +213,22 @@
         new Chart(document.getElementById(chartId), {
           type: "line",
           data: { labels, datasets: [{ data: values, borderColor: "#cc0066", fill: false, tension: 0.2 }] },
-          options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
+          options: {plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                display: true,
+                ticks: {
+                  maxRotation: 45,  
+                  minRotation: 45,
+                  autoSkip: true,   
+                  maxTicksLimit: 6   
+                }
+              },
+              y: {
+                ticks: { maxTicksLimit: 6 } 
+              }
+            }
+          }       
         });
       } catch (err) {
         console.error("FRED error", seriesId, err);
@@ -242,7 +257,22 @@
         new Chart(document.getElementById(chartId), {
           type: "line",
           data: { labels: timestamps, datasets: [{ data: pricesRaw, borderColor: "#ff3399", fill: false, tension: 0.2 }] },
-          options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
+          options: {plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              display: true,
+              ticks: {
+                maxRotation: 45,   // tilt labels for readability
+                minRotation: 45,
+                autoSkip: true,    // avoid every single date showing if crowded
+                maxTicksLimit: 6   // cap number of labels
+              }
+            },
+            y: {
+              ticks: { maxTicksLimit: 6 } // keeps y-axis clean
+            }
+          }
+        }
         });
       } catch (err) {
         console.error("Yahoo error", symbol, err);
