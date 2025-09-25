@@ -1,11 +1,11 @@
 // Netlify Function to batch Yahoo Finance calls for indexes.
 // - 1 function call per page load (saves Netlify credits)
-// - 5-minute CDN cache + small in-memory cache
-// - FMP fallback if Yahoo rate-limits (your key included below)
+// - 30-minute CDN cache + memory cache
+// - FMP fallback if Yahoo rate-limits
 
 const FMP_API_KEY = process.env.FMP_API_KEY || "MhI7zKnoqQ9DKey93CvbGqTOnU4U79Hu";
 
-// Symbols to fetch (add/remove here)
+// Symbols to fetch
 const SYMBOLS = [
   "^GSPC",  // S&P 500 (US)
   "^DJI",   // Dow (US)
@@ -19,14 +19,15 @@ const SYMBOLS = [
   "^TNX"    // 10Y Treasury yield (US)
 ];
 
-// In-memory cache (best-effort between warm invocations)
+// In-memory cache (lives while function stays warm)
 let memoryCache = { ts: 0, data: null };
-const TTL_MS = 5 * 60 * 1000; // 5 minutes
+const TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 export async function handler(event, context) {
   try {
-    // Serve from memory cache if fresh
     const now = Date.now();
+
+    // Serve from memory cache if still fresh
     if (memoryCache.data && (now - memoryCache.ts) < TTL_MS) {
       return respond(memoryCache.data);
     }
@@ -40,7 +41,7 @@ export async function handler(event, context) {
         const res = await fetch(url);
         const text = await res.text();
 
-        // Yahoo sometimes returns "Too Many Requests" as text
+        // Yahoo sometimes returns "Too Many Requests"
         if (text.startsWith("Too Many Requests")) {
           throw new Error("Yahoo 429");
         }
@@ -71,7 +72,7 @@ export async function handler(event, context) {
         }
 
       } catch (yahooErr) {
-        // Fallback to FMP — price + % change only (no history). We synthesize a 1-point “series”.
+        // Fallback to FMP — price + % change only
         try {
           const fmpUrl = `https://financialmodelingprep.com/api/v3/quote/${encodeURIComponent(sym)}?apikey=${FMP_API_KEY}`;
           const r = await fetch(fmpUrl);
@@ -96,7 +97,7 @@ export async function handler(event, context) {
       }
     }
 
-    // Store in memory cache
+    // Save in memory cache
     memoryCache = { ts: Date.now(), data: results };
 
     return respond(results);
@@ -104,7 +105,7 @@ export async function handler(event, context) {
   } catch (err) {
     return {
       statusCode: 500,
-      headers: corsHeaders(300),
+      headers: corsHeaders(1800),
       body: JSON.stringify({ error: err.message || "Unknown error" })
     };
   }
@@ -113,7 +114,7 @@ export async function handler(event, context) {
 function respond(payload) {
   return {
     statusCode: 200,
-    headers: corsHeaders(300), // 5 min CDN cache
+    headers: corsHeaders(1800), // 30 min CDN cache
     body: JSON.stringify(payload)
   };
 }
