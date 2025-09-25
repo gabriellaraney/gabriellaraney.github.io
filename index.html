@@ -13,27 +13,32 @@
   <div class="container" id="data-container">
     <!-- FRED Economic Indicators -->
     <div class="card">
-      <h2>GDP (USA)</h2>
+      <h2>GDP (🇺🇸 USA)</h2>
       <p id="gdp" class="value">Loading...</p>
       <canvas id="gdpChart"></canvas>
     </div>
     <div class="card">
-      <h2>Unemployment (USA)</h2>
+      <h2>Unemployment (🇺🇸 USA)</h2>
       <p id="unrate" class="value">Loading...</p>
       <canvas id="unrateChart"></canvas>
     </div>
     <div class="card">
-      <h2>CPI (USA)</h2>
+      <h2>CPI Inflation (YoY, 🇺🇸 USA)</h2>
       <p id="cpi" class="value">Loading...</p>
       <canvas id="cpiChart"></canvas>
     </div>
     <div class="card">
-      <h2>10Y Treasury Yield (Live)</h2>
+      <h2>PCE Inflation (YoY, 🇺🇸 USA)</h2>
+      <p id="pce" class="value">Loading...</p>
+      <canvas id="pceChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>10Y Treasury Yield (Live, 🇺🇸)</h2>
       <p id="gs10" class="value">Loading...</p>
       <canvas id="gs10Chart"></canvas>
     </div>
     <div class="card">
-      <h2>5Y Inflation Expectation (Proxy: TIPS)</h2>
+      <h2>5Y Inflation Expectation (Proxy: TIPS, 🇺🇸)</h2>
       <p id="t5yie" class="value">Loading...</p>
       <canvas id="t5yieChart"></canvas>
     </div>
@@ -96,7 +101,7 @@
       if (value == null || isNaN(value)) return "N/A";
       switch (type) {
         case "money":
-          return `$${(value/1000).toFixed(1)}T`; // FRED GDP is in billions
+          return `$${(value/1000).toFixed(1)}T`; // GDP is billions
         case "percent":
           return value.toFixed(2) + "%";
         case "index":
@@ -107,9 +112,11 @@
     }
 
     // --- FRED Data via Netlify Proxy ---
-    async function fetchFRED(seriesId, elementId, chartId, type="number") {
+    async function fetchFRED(seriesId, elementId, chartId, type="number", units="") {
       try {
-        const url = `/.netlify/functions/fred?series=${seriesId}`;
+        let url = `/.netlify/functions/fred?series=${seriesId}`;
+        if (units) url += `&units=${units}`;
+
         const res = await fetch(url);
         const data = await res.json();
 
@@ -189,27 +196,27 @@
       }
     }
 
-    // --- Load FRED Series ---
+    // --- Load FRED Indicators ---
     fetchFRED("GDP", "gdp", "gdpChart", "money");
     fetchFRED("UNRATE", "unrate", "unrateChart", "percent");
-    fetchFRED("CPIAUCSL", "cpi", "cpiChart", "percent");
-    // skip GS10 (monthly), use live Yahoo ^TNX below
-    // FRED inflation expectations available, but using TIPS ETF proxy instead
+    fetchFRED("CPIAUCSL", "cpi", "cpiChart", "percent", "pc1"); // YoY CPI
+    fetchFRED("PCEPI", "pce", "pceChart", "percent");           // YoY PCE
 
-    // --- Load Yahoo Series (indexes + yields) ---
-    fetchYahoo("^TNX", "gs10", "gs10Chart", "percent");  // Live 10Y yield
-    fetchYahoo("TIP", "t5yie", "t5yieChart");            // Inflation proxy (TIPS ETF)
+    // --- Load Yahoo Indicators ---
+    fetchYahoo("^TNX", "gs10", "gs10Chart", "percent");  // Live 10Y
+    fetchYahoo("TIP", "t5yie", "t5yieChart");            // Inflation proxy
 
+    // --- Load Yahoo Indexes ---
     fetchYahoo("^GSPC", "sp500", "sp500Chart");   // S&P 500
     fetchYahoo("^DJI", "dji", "djiChart");        // Dow
     fetchYahoo("^IXIC", "ixic", "ixicChart");     // Nasdaq
     fetchYahoo("^RUT", "rut", "rutChart");        // Russell 2000
 
-    fetchYahoo("^FTSE", "ftse", "ftseChart");     // FTSE 100 UK
-    fetchYahoo("^N225", "n225", "n225Chart");     // Nikkei Japan
-    fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");  // DAX Germany
-    fetchYahoo("^HSI", "hsi", "hsiChart");        // Hang Seng
-    fetchYahoo("000001.SS", "shcomp", "shcompChart"); // Shanghai Composite
+    fetchYahoo("^FTSE", "ftse", "ftseChart");     // UK
+    fetchYahoo("^N225", "n225", "n225Chart");     // Japan
+    fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");  // Germany
+    fetchYahoo("^HSI", "hsi", "hsiChart");        // Hong Kong
+    fetchYahoo("000001.SS", "shcomp", "shcompChart"); // China
   </script>
 </body>
 </html>
