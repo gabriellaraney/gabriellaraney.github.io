@@ -11,142 +11,143 @@
   <header>Economic Dashboard</header>
 
   <div class="container" id="data-container">
+    <!-- FRED Economic Indicators -->
     <div class="card">
-      <h2>GDP</h2>
-      <p id="gdp">Loading...</p>
+      <h2>GDP (USA)</h2>
+      <p id="gdp" class="value">Loading...</p>
       <canvas id="gdpChart"></canvas>
     </div>
     <div class="card">
-      <h2>Unemployment</h2>
-      <p id="unrate">Loading...</p>
+      <h2>Unemployment (USA)</h2>
+      <p id="unrate" class="value">Loading...</p>
       <canvas id="unrateChart"></canvas>
     </div>
     <div class="card">
-      <h2>CPI</h2>
-      <p id="cpi">Loading...</p>
+      <h2>CPI (USA)</h2>
+      <p id="cpi" class="value">Loading...</p>
       <canvas id="cpiChart"></canvas>
     </div>
     <div class="card">
-      <h2>10Y Treasury</h2>
-      <p id="gs10">Loading...</p>
+      <h2>10Y Treasury Yield</h2>
+      <p id="gs10" class="value">Loading...</p>
       <canvas id="gs10Chart"></canvas>
     </div>
     <div class="card">
-      <h2>S&P 500</h2>
-      <p id="sp500">Loading...</p>
+      <h2>5Y Inflation Expectation</h2>
+      <p id="t5yie" class="value">Loading...</p>
+      <canvas id="t5yieChart"></canvas>
+    </div>
+
+    <!-- U.S. Indexes -->
+    <div class="card">
+      <h2>S&P 500 (SPY)</h2>
+      <p id="sp500" class="value">Loading...</p>
       <canvas id="sp500Chart"></canvas>
     </div>
     <div class="card">
-      <h2>Dow Jones</h2>
-      <p id="dji">Loading...</p>
+      <h2>Dow Jones (DIA)</h2>
+      <p id="dji" class="value">Loading...</p>
       <canvas id="djiChart"></canvas>
     </div>
     <div class="card">
-      <h2>Nasdaq</h2>
-      <p id="ixic">Loading...</p>
+      <h2>Nasdaq (QQQ)</h2>
+      <p id="ixic" class="value">Loading...</p>
       <canvas id="ixicChart"></canvas>
     </div>
     <div class="card">
-      <h2>Russell 2000</h2>
-      <p id="rut">Loading...</p>
+      <h2>Russell 2000 (IWM)</h2>
+      <p id="rut" class="value">Loading...</p>
       <canvas id="rutChart"></canvas>
     </div>
-        <div class="card">
-      <h2>5Y Inflation Expectation</h2>
-      <p id="t5yie">Loading...</p>
-      <canvas id="t5yieChart"></canvas>
-    </div>
+
+    <!-- Global Indexes via ETFs -->
     <div class="card">
-      <h2>FTSE 100 (UK)</h2>
-      <p id="ftse">Loading...</p>
+      <h2>FTSE 100 🇬🇧 (EWU)</h2>
+      <p id="ftse" class="value">Loading...</p>
       <canvas id="ftseChart"></canvas>
     </div>
     <div class="card">
-      <h2>Nikkei 225 (Japan)</h2>
-      <p id="n225">Loading...</p>
+      <h2>Nikkei 225 🇯🇵 (EWJ)</h2>
+      <p id="n225" class="value">Loading...</p>
       <canvas id="n225Chart"></canvas>
     </div>
     <div class="card">
-      <h2>DAX (Germany)</h2>
-      <p id="gdaxi">Loading...</p>
+      <h2>DAX 🇩🇪 (EWG)</h2>
+      <p id="gdaxi" class="value">Loading...</p>
       <canvas id="gdaxiChart"></canvas>
     </div>
     <div class="card">
-      <h2>Hang Seng (Hong Kong)</h2>
-      <p id="hsi">Loading...</p>
+      <h2>Hang Seng 🇭🇰 (EWH)</h2>
+      <p id="hsi" class="value">Loading...</p>
       <canvas id="hsiChart"></canvas>
     </div>
     <div class="card">
-      <h2>Shanghai Composite (China)</h2>
-      <p id="shcomp">Loading...</p>
+      <h2>China 🇨🇳 (MCHI)</h2>
+      <p id="shcomp" class="value">Loading...</p>
       <canvas id="shcompChart"></canvas>
     </div>
   </div>
 
   <script>
     const FRED_API_KEY = "c5d6f351f39d10c302ebc99648038d4a";
+    const ALPHA_KEY = "6OHNKZTCLXM3OZKW";
 
+    // Fetch FRED data
     async function fetchFRED(seriesId, elementId, chartId) {
-      const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
-      const res = await fetch(url);
-      const data = await res.json();
-      const observations = data.observations.filter(o => o.value !== ".").slice(-20); // last 20 points
-      const labels = observations.map(o => o.date);
-      const values = observations.map(o => parseFloat(o.value));
-
-      // latest value
-      document.getElementById(elementId).innerText = values[values.length - 1];
-
-      // chart
-      new Chart(document.getElementById(chartId), {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [{
-            label: seriesId,
-            data: values,
-            borderColor: "#cc0066",
-            fill: false,
-            tension: 0.2
-          }]
-        },
-        options: { scales: { x: { display: false } } }
-      });
-    }
-
-    // Major FRED indicators
-    fetchFRED("GDP", "gdp", "gdpChart");
-    fetchFRED("UNRATE", "unrate", "unrateChart");
-    fetchFRED("CPIAUCSL", "cpi", "cpiChart");
-    fetchFRED("GS10", "gs10", "gs10Chart");
-    
-    // FRED Inflation Expectations
-    fetchFRED("T5YIE", "t5yie", "t5yieChart");
-
-    // Global Indexes via Yahoo
-    fetchYahoo("^FTSE", "ftse", "ftseChart");       // UK
-    fetchYahoo("^N225", "n225", "n225Chart");       // Japan
-    fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");    // Germany
-    fetchYahoo("^HSI", "hsi", "hsiChart");          // Hong Kong
-    fetchYahoo("000001.SS", "shcomp", "shcompChart"); // China
-
-
-    // Yahoo Finance indexes
-    async function fetchYahoo(symbol, elementId, chartId) {
       try {
-        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1mo`;
+        const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
         const res = await fetch(url);
         const data = await res.json();
-        const result = data.chart.result[0];
-        const values = result.indicators.quote[0].close;
-        const timestamps = result.timestamp.map(t => new Date(t * 1000).toLocaleDateString());
+        const observations = data.observations.filter(o => o.value !== ".").slice(-20);
+        const labels = observations.map(o => o.date);
+        const values = observations.map(o => parseFloat(o.value));
 
-        document.getElementById(elementId).innerText = values[values.length - 1].toFixed(2);
+        // Latest value
+        document.getElementById(elementId).innerText = values.at(-1).toFixed(2);
 
+        // Chart
         new Chart(document.getElementById(chartId), {
           type: "line",
           data: {
-            labels: timestamps,
+            labels: labels,
+            datasets: [{
+              label: seriesId,
+              data: values,
+              borderColor: "#cc0066",
+              fill: false,
+              tension: 0.2
+            }]
+          },
+          options: { scales: { x: { display: false } } }
+        });
+      } catch (err) {
+        document.getElementById(elementId).innerText = "Error";
+      }
+    }
+
+    // Fetch Alpha Vantage ETF data
+    async function fetchAlpha(symbol, elementId, chartId) {
+      try {
+        const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${ALPHA_KEY}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const series = data["Time Series (Daily)"];
+        if (!series) {
+          document.getElementById(elementId).innerText = "Error";
+          return;
+        }
+
+        const labels = Object.keys(series).slice(0, 20).reverse();
+        const values = labels.map(date => parseFloat(series[date]["4. close"]));
+
+        // Latest value
+        document.getElementById(elementId).innerText = values.at(-1).toFixed(2);
+
+        // Chart
+        new Chart(document.getElementById(chartId), {
+          type: "line",
+          data: {
+            labels: labels,
             datasets: [{
               label: symbol,
               data: values,
@@ -162,10 +163,25 @@
       }
     }
 
-    fetchYahoo("^GSPC", "sp500", "sp500Chart");
-    fetchYahoo("^DJI", "dji", "djiChart");
-    fetchYahoo("^IXIC", "ixic", "ixicChart");
-    fetchYahoo("^RUT", "rut", "rutChart");
+    // FRED indicators
+    fetchFRED("GDP", "gdp", "gdpChart");
+    fetchFRED("UNRATE", "unrate", "unrateChart");
+    fetchFRED("CPIAUCSL", "cpi", "cpiChart");
+    fetchFRED("GS10", "gs10", "gs10Chart");
+    fetchFRED("T5YIE", "t5yie", "t5yieChart");
+
+    // U.S. Indexes (via ETFs)
+    fetchAlpha("SPY", "sp500", "sp500Chart");
+    fetchAlpha("DIA", "dji", "djiChart");
+    fetchAlpha("QQQ", "ixic", "ixicChart");
+    fetchAlpha("IWM", "rut", "rutChart");
+
+    // Global Indexes (via ETFs)
+    fetchAlpha("EWU", "ftse", "ftseChart");
+    fetchAlpha("EWJ", "n225", "n225Chart");
+    fetchAlpha("EWG", "gdaxi", "gdaxiChart");
+    fetchAlpha("EWH", "hsi", "hsiChart");
+    fetchAlpha("MCHI", "shcomp", "shcompChart");
   </script>
 </body>
 </html>

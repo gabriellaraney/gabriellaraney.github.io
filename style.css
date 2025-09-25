@@ -35,6 +35,12 @@ header {
   color: #cc0066;
 }
 
+.value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
 canvas {
   max-width: 100%;
   height: auto;
