@@ -97,9 +97,7 @@
   </div>
 
   <script>
-    const FRED_API_KEY = "c5d6f351f39d10c302ebc99648038d4a";
-
-    // --- Show last updated time ---
+    // --- Last updated ---
     document.getElementById("lastUpdated").innerText =
       "Last updated: " + new Date().toLocaleString();
 
@@ -118,37 +116,54 @@
       }
     }
 
-    // --- FRED Data via Netlify Proxy ---
-    async function fetchFRED(seriesId, elementId, chartId, type="number", units="") {
+    // --- FRED (via Netlify proxy). We'll compute YoY on the client for CPI/PCE. ---
+    async function fetchFRED(seriesId, elementId, chartId, options = {}) {
+      const { displayType="number", transform=null } = options; // transform: null | 'yoy'
       try {
-        let url = `/.netlify/functions/fred?series=${seriesId}`;
-        if (units) url += `&units=${units}`;
-
+        const url = `/.netlify/functions/fred?series=${seriesId}`;
         const res = await fetch(url);
         const data = await res.json();
 
-        const validObs = (data.observations || [])
-          .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)));
+        let obs = (data.observations || [])
+          .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)))
+          .map(o => ({ date: o.date, value: parseFloat(o.value) }));
 
-        if (validObs.length === 0) {
+        if (obs.length === 0) {
           document.getElementById(elementId).innerText = "No data";
           return;
         }
 
-        const last = validObs.at(-1);
-        const lastVal = parseFloat(last.value);
-        document.getElementById(elementId).innerText = formatNumber(lastVal, type);
+        // Optional: compute YoY % (monthly series)
+        if (transform === "yoy") {
+          const yoy = [];
+          for (let i = 12; i < obs.length; i++) {
+            const prev = obs[i - 12].value;
+            const curr = obs[i].value;
+            if (prev && !isNaN(prev)) {
+              yoy.push({
+                date: obs[i].date,
+                value: ((curr - prev) / prev) * 100
+              });
+            }
+          }
+          obs = yoy;
+        }
 
-        const recent = validObs.slice(-20);
+        // Latest value for the card
+        const latest = obs[obs.length - 1]?.value;
+        document.getElementById(elementId).innerText = formatNumber(latest, displayType);
+
+        // Chart (last N points)
+        const recent = obs.slice(-20);
         const labels = recent.map(o => o.date);
-        const values = recent.map(o => parseFloat(o.value));
+        const values = recent.map(o => o.value);
 
         new Chart(document.getElementById(chartId), {
           type: "line",
           data: {
             labels,
             datasets: [{
-              label: seriesId,
+              label: seriesId + (transform === "yoy" ? " (YoY %)" : ""),
               data: values,
               borderColor: "#cc0066",
               fill: false,
@@ -163,25 +178,35 @@
       }
     }
 
-    // --- Yahoo Finance via Netlify Proxy ---
-    async function fetchYahoo(symbol, elementId, chartId, type="index") {
+    // --- Yahoo Finance (via Netlify proxy) ---
+    // Supports showYTD header toggle (use false for 10Y yield)
+    async function fetchYahoo(symbol, elementId, chartId, options = {}) {
+      const { displayType="index", showYTD=true } = options;
       try {
         const url = `/.netlify/functions/yahoo?symbol=${symbol}`;
         const res = await fetch(url);
         const data = await res.json();
 
         const result = data.chart.result[0];
-        const prices = result.indicators.quote[0].close.filter(v => v != null);
+        const pricesRaw = result.indicators.quote[0].close;
         const timestamps = result.timestamp.map(t => new Date(t * 1000).toLocaleDateString());
+        const prices = pricesRaw.filter(v => v != null);
 
         const firstVal = prices[0];
-        const lastVal = prices[prices.length - 1];
-        const pctChange = ((lastVal - firstVal) / firstVal) * 100;
+        const lastVal  = prices[prices.length - 1];
 
-        document.getElementById(elementId).innerHTML =
-          `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
-            ${pctChange.toFixed(2)}% YTD
-          </span><br>${formatNumber(lastVal, type)}`;
+        // Card text
+        if (showYTD) {
+          const pctChange = ((lastVal - firstVal) / firstVal) * 100;
+          document.getElementById(elementId).innerHTML =
+            `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
+              ${pctChange.toFixed(2)}% YTD
+            </span><br>${formatNumber(lastVal, displayType)}`;
+        } else {
+          // No % header (for ^TNX)
+          document.getElementById(elementId).innerText =
+            formatNumber(lastVal, displayType);
+        }
 
         new Chart(document.getElementById(chartId), {
           type: "line",
@@ -189,7 +214,7 @@
             labels: timestamps,
             datasets: [{
               label: symbol,
-              data: prices,
+              data: pricesRaw, // keep original length to align labels
               borderColor: "#ff3399",
               fill: false,
               tension: 0.2
@@ -204,25 +229,36 @@
     }
 
     // --- Load FRED Indicators ---
-    fetchFRED("GDP", "gdp", "gdpChart", "money");
-    fetchFRED("UNRATE", "unrate", "unrateChart", "percent");
-    fetchFRED("CPIAUCSL", "cpi", "cpiChart", "percent", "pc1"); // YoY CPI
-    fetchFRED("PCEPI", "pce", "pceChart", "percent", "pc1");    // YoY PCE
+    // GDP: billions -> money (trillions)
+    fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });
+
+    // Unemployment: already %
+    fetchFRED("UNRATE", "unrate", "unrateChart", { displayType: "percent" });
+
+    // CPI YoY % (computed here)
+    fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
+
+    // PCE YoY % (computed here)
+    fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
 
     // --- Load Yahoo Indicators ---
-    fetchYahoo("^TNX", "gs10", "gs10Chart", "percent");  // Live 10Y
-    fetchYahoo("TIP", "t5yie", "t5yieChart");            // Inflation proxy
+    // 10Y yield: show ONLY latest % (no YTD header)
+    fetchYahoo("^TNX", "gs10", "gs10Chart", { displayType: "percent", showYTD: false });
 
-    // --- Load Yahoo Indexes ---
-    fetchYahoo("^GSPC", "sp500", "sp500Chart");   // S&P 500
-    fetchYahoo("^DJI", "dji", "djiChart");        // Dow
-    fetchYahoo("^IXIC", "ixic", "ixicChart");     // Nasdaq
-    fetchYahoo("^RUT", "rut", "rutChart");        // Russell 2000
-    fetchYahoo("^FTSE", "ftse", "ftseChart");     // UK
-    fetchYahoo("^N225", "n225", "n225Chart");     // Japan
-    fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");  // Germany
-    fetchYahoo("^HSI", "hsi", "hsiChart");        // Hong Kong
-    fetchYahoo("000001.SS", "shcomp", "shcompChart"); // China
+    // Inflation proxy (TIPS ETF): keep YTD
+    fetchYahoo("TIP", "t5yie", "t5yieChart", { displayType: "index", showYTD: true });
+
+    // --- Load Yahoo Indexes (with YTD header) ---
+    fetchYahoo("^GSPC", "sp500", "sp500Chart", { displayType: "index", showYTD: true });
+    fetchYahoo("^DJI",  "dji",   "djiChart",   { displayType: "index", showYTD: true });
+    fetchYahoo("^IXIC", "ixic",  "ixicChart",  { displayType: "index", showYTD: true });
+    fetchYahoo("^RUT",  "rut",   "rutChart",   { displayType: "index", showYTD: true });
+
+    fetchYahoo("^FTSE",    "ftse",   "ftseChart",   { displayType: "index", showYTD: true });
+    fetchYahoo("^N225",    "n225",   "n225Chart",   { displayType: "index", showYTD: true });
+    fetchYahoo("^GDAXI",   "gdaxi",  "gdaxiChart",  { displayType: "index", showYTD: true });
+    fetchYahoo("^HSI",     "hsi",    "hsiChart",    { displayType: "index", showYTD: true });
+    fetchYahoo("000001.SS","shcomp", "shcompChart", { displayType: "index", showYTD: true });
   </script>
 </body>
 </html>
