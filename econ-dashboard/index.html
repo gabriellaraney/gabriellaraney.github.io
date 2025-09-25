@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Economic Dashboard</title>
+  <title>Cute Economic Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    Economic Dashboard
+    📊 Cute Economic Dashboard
     <div id="lastUpdated"></div>
+    <div class="badge">⚡ Market data cached for 30 minutes — numbers may not update every refresh</div>
   </header>
 
+  <!-- Macroeconomic Data -->
   <h2 class="section-header">Macroeconomic Data</h2>
   <h3 class="sub-header">Growth & Inflation</h3>
   <div class="container">
@@ -32,6 +34,7 @@
     <div class="card"><h2>5Y Breakeven Inflation (🇺🇸) <span class="ticker">[T5YIE]</span></h2><p id="t5yie" class="value">Loading...</p><canvas id="t5yieChart"></canvas></div>
   </div>
 
+  <!-- Market Indexes -->
   <h2 class="section-header">Market Indexes</h2>
   <h3 class="sub-header">US</h3>
   <div class="container">
@@ -53,17 +56,17 @@
 
   <script>
     const FRED_BASE = "https://econ-dashboard.gabbyraney.workers.dev";
-    const NETLIFY_FN_BASE = "https://YOUR_NETLIFY_SITE.netlify.app/.netlify/functions"; // <-- replace
+    const NETLIFY_FN_BASE = "https://YOUR_NETLIFY_SITE.netlify.app/.netlify/functions"; // replace
 
     document.getElementById("lastUpdated").innerText = "Last updated: " + new Date().toLocaleString();
 
     function formatNumber(value, type="number") {
       if (value == null || isNaN(value)) return "N/A";
       switch (type) {
-        case "money": return `$${(value/1000).toFixed(2)}T`; // GDP in $B → $T
-        case "percent": return value.toFixed(2) + "%";
-        case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        default: return value.toFixed(2);
+        case "money": return `$${(value/1000).toFixed(5)}T`;
+        case "percent": return value.toFixed(5) + "%";
+        case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 5, maximumFractionDigits: 5 });
+        default: return value.toFixed(5);
       }
     }
 
@@ -87,10 +90,7 @@
           const recent = obs.slice(-20);
           new Chart(document.getElementById(chartId), {
             type: "line",
-            data: {
-              labels: recent.map(o => o.date),
-              datasets: [{ data: recent.map(o => o.value), borderColor: "#cc0066", fill: false, tension: 0.2 }]
-            },
+            data: { labels: recent.map(o => o.date), datasets: [{ data: recent.map(o => o.value), borderColor: "#cc0066", fill: false, tension: 0.2 }] },
             options: { plugins: { legend: { display: false } } }
           });
         }
@@ -113,7 +113,7 @@
       try {
         const res = await fetch(`${NETLIFY_FN_BASE}/indexes`);
         const data = await res.json();
-        // Mapping symbol→DOM ids
+
         const map = {
           "^GSPC": { id: "sp500", chart: "sp500Chart", ytd: true, type: "index" },
           "^DJI":  { id: "dji",   chart: "djiChart",   ytd: true, type: "index" },
@@ -124,41 +124,59 @@
           "^GDAXI":{ id: "gdaxi", chart: "gdaxiChart", ytd: true, type: "index" },
           "^HSI":  { id: "hsi",   chart: "hsiChart",   ytd: true, type: "index" },
           "000001.SS": { id: "shcomp", chart: "shcompChart", ytd: true, type: "index" },
-          "^TNX":  { id: "gs10",  chart: "gs10Chart",  ytd: false, type: "percent" } // no YTD header
+          "^TNX":  { id: "gs10",  chart: "gs10Chart",  ytd: false, type: "percent" }
         };
 
         for (const [sym, meta] of Object.entries(map)) {
           const rec = data[sym];
-          if (!rec || !rec.timestamp || !rec.indicators || !rec.indicators.quote?.[0]?.close) {
-            document.getElementById(meta.id).innerText = "Error";
+          const el = document.getElementById(meta.id);
+
+          if (!rec || rec.error) {
+            el.innerText = "Error";
             continue;
           }
 
-          const prices = rec.indicators.quote[0].close.filter(v => v != null);
-          const labels = rec.timestamp.map(t => new Date(t * 1000).toLocaleDateString());
-          const first = prices[0], last = prices[prices.length - 1];
+          if (rec.provider === "Yahoo") {
+            const prices = rec.indicators.quote[0].close.filter(v => v != null);
+            const labels = rec.timestamp.map(t => new Date(t * 1000).toLocaleDateString());
+            const first = prices[0], last = prices[prices.length - 1];
 
-          if (meta.ytd) {
-            const ytd = ((last - first) / first) * 100;
-            document.getElementById(meta.id).innerHTML =
-              `<span style="color:${ytd >= 0 ? 'green' : 'red'};">${ytd.toFixed(2)}% YTD</span><br>${formatNumber(last, meta.type)}`;
-          } else {
-            // 10Y yield: show latest only (already scaled to % by the function)
-            document.getElementById(meta.id).innerText = formatNumber(last, "percent");
+            if (meta.ytd) {
+              const ytd = ((last - first) / first) * 100;
+              el.innerHTML = `<span style="color:${ytd >= 0 ? 'green' : 'red'};">${ytd.toFixed(5)}% YTD</span><br>${formatNumber(last, meta.type)}<br><small style="color:#777">Source: Yahoo</small>`;
+            } else {
+              el.innerHTML = `${formatNumber(last, "percent")}<br><small style="color:#777">Source: Yahoo</small>`;
+            }
+
+            new Chart(document.getElementById(meta.chart), {
+              type: "line",
+              data: { labels, datasets: [{ data: prices, borderColor: "#ff3399", fill: false, tension: 0.2 }] },
+              options: { plugins: { legend: { display: false } } }
+            });
           }
 
-          new Chart(document.getElementById(meta.chart), {
-            type: "line",
-            data: { labels, datasets: [{ data: prices, borderColor: "#ff3399", fill: false, tension: 0.2 }] },
-            options: { plugins: { legend: { display: false } } }
-          });
+          else if (rec.provider === "FMP") {
+            const last = rec.meta.regularMarketPrice;
+            const pct = rec.meta.changesPercentage || 0;
+
+            if (meta.ytd) {
+              el.innerHTML = `<span style="color:${pct >= 0 ? 'green' : 'red'};">${pct.toFixed(5)}% Δ</span><br>${formatNumber(last, meta.type)}<br><small style="color:#777">Source: FMP (fallback)</small>`;
+            } else {
+              el.innerHTML = `${formatNumber(last, meta.type)}<br><small style="color:#777">Source: FMP (fallback)</small>`;
+            }
+
+            new Chart(document.getElementById(meta.chart), {
+              type: "line",
+              data: { labels: ["Now"], datasets: [{ data: [last], borderColor: "#999", fill: false }] },
+              options: { plugins: { legend: { display: false } } }
+            });
+          }
         }
       } catch (e) {
         console.error("Indexes fetch failed", e);
       }
     }
 
-    // Run both
     loadFred();
     loadIndexes();
   </script>
