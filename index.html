@@ -8,7 +8,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>📊 Cute Economic Dashboard</header>
+  <header>
+    📊 Cute Economic Dashboard
+    <div id="lastUpdated" style="font-size:0.9rem; font-weight:normal;"></div>
+  </header>
 
   <div class="container" id="data-container">
     <!-- FRED Economic Indicators -->
@@ -95,6 +98,10 @@
 
   <script>
     const FRED_API_KEY = "c5d6f351f39d10c302ebc99648038d4a";
+
+    // --- Show last updated time ---
+    document.getElementById("lastUpdated").innerText =
+      "Last updated: " + new Date().toLocaleString();
 
     // --- Number formatting helper ---
     function formatNumber(value, type="number") {
@@ -200,7 +207,7 @@
     fetchFRED("GDP", "gdp", "gdpChart", "money");
     fetchFRED("UNRATE", "unrate", "unrateChart", "percent");
     fetchFRED("CPIAUCSL", "cpi", "cpiChart", "percent", "pc1"); // YoY CPI
-    fetchFRED("PCEPI", "pce", "pceChart", "percent");           // YoY PCE
+    fetchFRED("PCEPI", "pce", "pceChart", "percent", "pc1");    // YoY PCE
 
     // --- Load Yahoo Indicators ---
     fetchYahoo("^TNX", "gs10", "gs10Chart", "percent");  // Live 10Y
@@ -211,7 +218,6 @@
     fetchYahoo("^DJI", "dji", "djiChart");        // Dow
     fetchYahoo("^IXIC", "ixic", "ixicChart");     // Nasdaq
     fetchYahoo("^RUT", "rut", "rutChart");        // Russell 2000
-
     fetchYahoo("^FTSE", "ftse", "ftseChart");     // UK
     fetchYahoo("^N225", "n225", "n225Chart");     // Japan
     fetchYahoo("^GDAXI", "gdaxi", "gdaxiChart");  // Germany
