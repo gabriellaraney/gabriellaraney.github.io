@@ -10,55 +10,140 @@
 <body>
   <header>
     Economic Dashboard
-    <div id="lastUpdated"></div>
-    <div class="badge">Market data cached for 30 minutes — numbers may not update every refresh</div>
+    <div id="lastUpdated" style="font-size:0.9rem; font-weight:normal;"></div>
   </header>
 
   <!-- Macroeconomic Data -->
   <h2 class="section-header">Macroeconomic Data</h2>
   <h3 class="sub-header">Growth & Inflation</h3>
   <div class="container">
-    <div class="card"><h2>GDP (US)</h2><span class="ticker-tag">GDP</span><p id="gdp" class="value">Loading...</p><canvas id="gdpChart"></canvas></div>
-    <div class="card"><h2>Unemployment (US)</h2><span class="ticker-tag">UNRATE</span><p id="unrate" class="value">Loading...</p><canvas id="unrateChart"></canvas></div>
-    <div class="card"><h2>CPI Inflation YoY (US)</h2><span class="ticker-tag">CPIAUCSL</span><p id="cpi" class="value">Loading...</p><canvas id="cpiChart"></canvas></div>
-    <div class="card"><h2>PCE Inflation YoY (US)</h2><span class="ticker-tag">PCEPI</span><p id="pce" class="value">Loading...</p><canvas id="pceChart"></canvas></div>
-    <div class="card"><h2>PPI Inflation YoY (US)</h2><span class="ticker-tag">PPIACO</span><p id="ppi" class="value">Loading...</p><canvas id="ppiChart"></canvas></div>
+    <div class="card">
+      <h2>GDP (US)</h2>
+      <span class="ticker">[GDP]</span>
+      <p id="gdp" class="value">Loading...</p>
+      <canvas id="gdpChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Unemployment (US)</h2>
+      <span class="ticker">[UNRATE]</span>
+      <p id="unrate" class="value">Loading...</p>
+      <canvas id="unrateChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>CPI Inflation YoY (US)</h2>
+      <span class="ticker">[CPIAUCSL]</span>
+      <p id="cpi" class="value">Loading...</p>
+      <canvas id="cpiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>PCE Inflation YoY (US)</h2>
+      <span class="ticker">[PCEPI]</span>
+      <p id="pce" class="value">Loading...</p>
+      <canvas id="pceChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>PPI Inflation YoY (US)</h2>
+      <span class="ticker">[PPIACO]</span>
+      <p id="ppi" class="value">Loading...</p>
+      <canvas id="ppiChart"></canvas>
+    </div>
   </div>
 
-  <h2 class="section-header">Macroeconomic Data</h2>
-  <h3 class="sub-header">Rates & Expectations</h3>
+  <h3 class="sub-header">Macroeconomic Data – Rates & Expectations</h3>
   <div class="container">
-    <div class="card"><h2>SOFR (US)</h2><span class="ticker-tag">SOFR</span><p id="sofr" class="value">Loading...</p><canvas id="sofrChart"></canvas></div>
-    <div class="card"><h2>Fed Funds Rate (US)</h2><span class="ticker-tag">FEDFUNDS</span><p id="fedfunds" class="value">Loading...</p><canvas id="fedfundsChart"></canvas></div>
-    <div class="card"><h2>10Y Treasury Yield (US)</h2><span class="ticker-tag">^TNX</span><p id="gs10" class="value">Loading...</p><canvas id="gs10Chart"></canvas></div>
-    <div class="card"><h2>5Y Breakeven Inflation (US)</h2><span class="ticker-tag">T5YIE</span><p id="t5yie" class="value">Loading...</p><canvas id="t5yieChart"></canvas></div>
+    <div class="card">
+      <h2>SOFR (US)</h2>
+      <span class="ticker">[SOFR]</span>
+      <p id="sofr" class="value">Loading...</p>
+      <canvas id="sofrChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Fed Funds Rate (US)</h2>
+      <span class="ticker">[FEDFUNDS]</span>
+      <p id="fedfunds" class="value">Loading...</p>
+      <canvas id="fedfundsChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>10Y Treasury Yield (US)</h2>
+      <span class="ticker">[^TNX]</span>
+      <p id="gs10" class="value">Loading...</p>
+      <canvas id="gs10Chart"></canvas>
+    </div>
+    <div class="card">
+      <h2>5Y Breakeven Inflation Expectation (US)</h2>
+      <span class="ticker">[T5YIE]</span>
+      <p id="t5yie" class="value">Loading...</p>
+      <canvas id="t5yieChart"></canvas>
+    </div>
   </div>
 
   <!-- Market Indexes -->
   <h2 class="section-header">Market Indexes</h2>
-  <h3 class="sub-header">US</h3>
+  <h3 class="sub-header">US Indexes</h3>
   <div class="container">
-    <div class="card"><h2>S&P 500</h2><span class="ticker-tag">^GSPC</span><p id="sp500" class="value">Loading...</p><canvas id="sp500Chart"></canvas></div>
-    <div class="card"><h2>Dow Jones</h2><span class="ticker-tag">^DJI</span><p id="dji" class="value">Loading...</p><canvas id="djiChart"></canvas></div>
-    <div class="card"><h2>Nasdaq</h2><span class="ticker-tag">^IXIC</span><p id="ixic" class="value">Loading...</p><canvas id="ixicChart"></canvas></div>
-    <div class="card"><h2>Russell 2000</h2><span class="ticker-tag">^RUT</span><p id="rut" class="value">Loading...</p><canvas id="rutChart"></canvas></div>
+    <div class="card">
+      <h2>S&P 500</h2>
+      <span class="ticker">[^GSPC]</span>
+      <p id="sp500" class="value">Loading...</p>
+      <canvas id="sp500Chart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Dow Jones</h2>
+      <span class="ticker">[^DJI]</span>
+      <p id="dji" class="value">Loading...</p>
+      <canvas id="djiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Nasdaq</h2>
+      <span class="ticker">[^IXIC]</span>
+      <p id="ixic" class="value">Loading...</p>
+      <canvas id="ixicChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Russell 2000</h2>
+      <span class="ticker">[^RUT]</span>
+      <p id="rut" class="value">Loading...</p>
+      <canvas id="rutChart"></canvas>
+    </div>
   </div>
 
-  <h2 class="section-header">Market Indexes</h2>
-  <h3 class="sub-header">Global</h3>
+  <h3 class="sub-header">Global Indexes</h3>
   <div class="container">
-    <div class="card"><h2>FTSE 100 (UK)</h2><span class="ticker-tag">^FTSE</span><p id="ftse" class="value">Loading...</p><canvas id="ftseChart"></canvas></div>
-    <div class="card"><h2>Nikkei 225 (Japan)</h2><span class="ticker-tag">^N225</span><p id="n225" class="value">Loading...</p><canvas id="n225Chart"></canvas></div>
-    <div class="card"><h2>DAX (Germany)</h2><span class="ticker-tag">^GDAXI</span><p id="gdaxi" class="value">Loading...</p><canvas id="gdaxiChart"></canvas></div>
-    <div class="card"><h2>Hang Seng (Hong Kong)</h2><span class="ticker-tag">^HSI</span><p id="hsi" class="value">Loading...</p><canvas id="hsiChart"></canvas></div>
-    <div class="card"><h2>Shanghai Composite (China)</h2><span class="ticker-tag">000001.SS</span><p id="shcomp" class="value">Loading...</p><canvas id="shcompChart"></canvas></div>
+    <div class="card">
+      <h2>FTSE 100 (UK)</h2>
+      <span class="ticker">[^FTSE]</span>
+      <p id="ftse" class="value">Loading...</p>
+      <canvas id="ftseChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Nikkei 225 (Japan)</h2>
+      <span class="ticker">[^N225]</span>
+      <p id="n225" class="value">Loading...</p>
+      <canvas id="n225Chart"></canvas>
+    </div>
+    <div class="card">
+      <h2>DAX (Germany)</h2>
+      <span class="ticker">[^GDAXI]</span>
+      <p id="gdaxi" class="value">Loading...</p>
+      <canvas id="gdaxiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Hang Seng (Hong Kong)</h2>
+      <span class="ticker">[^HSI]</span>
+      <p id="hsi" class="value">Loading...</p>
+      <canvas id="hsiChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Shanghai Composite (China)</h2>
+      <span class="ticker">[000001.SS]</span>
+      <p id="shcomp" class="value">Loading...</p>
+      <canvas id="shcompChart"></canvas>
+    </div>
   </div>
 
   <script>
-    const FRED_BASE = "https://econ-dashboard.gabbyraney.workers.dev";
-    const NETLIFY_FN_BASE = "https://gabriellaraney.netlify.app/.netlify/functions";
-
-    document.getElementById("lastUpdated").innerText = "Last updated: " + new Date().toLocaleString();
+    document.getElementById("lastUpdated").innerText =
+      "Last updated: " + new Date().toLocaleString();
 
     function formatNumber(value, type="number") {
       if (value == null || isNaN(value)) return "N/A";
@@ -70,120 +155,62 @@
       }
     }
 
-    // ----------- FRED (batch) -----------
-    async function loadFred() {
+    async function fetchBackend(symbol, elementId, chartId, options = {}) {
+      const { displayType="index", showYTD=true } = options;
       try {
-        const res = await fetch(`${FRED_BASE}/fred`);
+        const url = `http://127.0.0.1:8000/quote/${encodeURIComponent(symbol)}`;
+        const res = await fetch(url);
         const data = await res.json();
+        if (data.error) throw new Error(data.error);
 
-        function render(seriesId, elId, chartId, type) {
-          const obs = (data[seriesId] || [])
-            .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)))
-            .map(o => ({ date: o.date, value: parseFloat(o.value) }));
-          if (!obs.length) { document.getElementById(elId).innerText = "No data"; return; }
+        const prices = data.history.values;
+        const dates = data.history.dates;
+        const firstVal = prices[0], lastVal = prices[prices.length - 1];
 
-          const latest = obs[obs.length - 1].value;
-          document.getElementById(elId).innerText = formatNumber(latest, type);
-
-          const recent = obs.slice(-20);
-          new Chart(document.getElementById(chartId), {
-            type: "line",
-            data: { labels: recent.map(o => o.date), datasets: [{ data: recent.map(o => o.value), borderColor: "#cc0066", fill: false, tension: 0.2 }] },
-            options: { plugins: { legend: { display: false } } }
-          });
+        if (showYTD) {
+          const pctChange = ((lastVal - firstVal) / firstVal) * 100;
+          document.getElementById(elementId).innerHTML =
+            `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
+              ${pctChange.toFixed(5)}% YTD
+            </span><br>${formatNumber(lastVal, displayType)}`;
+        } else {
+          document.getElementById(elementId).innerText = formatNumber(lastVal, displayType);
         }
 
-        render("GDP", "gdp", "gdpChart", "money");
-        render("UNRATE", "unrate", "unrateChart", "percent");
-        render("CPIAUCSL", "cpi", "cpiChart", "percent");
-        render("PCEPI", "pce", "pceChart", "percent");
-        render("PPIACO", "ppi", "ppiChart", "percent");
-        render("SOFR", "sofr", "sofrChart", "percent");
-        render("FEDFUNDS", "fedfunds", "fedfundsChart", "percent");
-        render("T5YIE", "t5yie", "t5yieChart", "percent");
-      } catch (e) {
-        console.error("FRED fetch failed", e);
-      }
-    }
-
-    // ----------- Indexes (Yahoo via Netlify, with FMP fallback) -----------
-    async function loadIndexes() {
-      try {
-        const res = await fetch(`${NETLIFY_FN_BASE}/indexes`);
-        const data = await res.json();
-
-        const map = {
-          "^GSPC": { id: "sp500", chart: "sp500Chart", ytd: true, type: "index" },
-          "^DJI":  { id: "dji",   chart: "djiChart",   ytd: true, type: "index" },
-          "^IXIC": { id: "ixic",  chart: "ixicChart",  ytd: true, type: "index" },
-          "^RUT":  { id: "rut",   chart: "rutChart",   ytd: true, type: "index" },
-          "^FTSE": { id: "ftse",  chart: "ftseChart",  ytd: true, type: "index" },
-          "^N225": { id: "n225",  chart: "n225Chart",  ytd: true, type: "index" },
-          "^GDAXI":{ id: "gdaxi", chart: "gdaxiChart", ytd: true, type: "index" },
-          "^HSI":  { id: "hsi",   chart: "hsiChart",   ytd: true, type: "index" },
-          "000001.SS": { id: "shcomp", chart: "shcompChart", ytd: true, type: "index" },
-          "^TNX":  { id: "gs10",  chart: "gs10Chart",  ytd: false, type: "percent" }
-        };
-
-        for (const [sym, meta] of Object.entries(map)) {
-          const rec = data[sym];
-          const el = document.getElementById(meta.id);
-
-          if (!rec || rec.error) {
-            el.innerText = "Error";
-            continue;
-          }
-
-          if (rec.provider === "Yahoo") {
-            const prices = rec.indicators.quote[0].close.filter(v => v != null);
-            const labels = rec.timestamp.map(t => new Date(t * 1000).toLocaleDateString());
-            const first = prices[0], last = prices[prices.length - 1];
-
-            if (meta.ytd) {
-              const ytd = ((last - first) / first) * 100;
-              el.innerHTML = `
-                <span style="color:${ytd >= 0 ? 'green' : 'red'};">${ytd.toFixed(5)}% YTD</span>
-                ${formatNumber(last, meta.type)}
-                <span class="source">Source: Yahoo</span>
-              `;
-            } else {
-              el.innerHTML = `
-                ${formatNumber(last, "percent")}
-                <span class="source">Source: Yahoo</span>
-              `;
+        new Chart(document.getElementById(chartId), {
+          type: "line",
+          data: {
+            labels: dates,
+            datasets: [{ data: prices, borderColor: "#ff3399", fill: false, tension: 0.2 }]
+          },
+          options: {
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                display: true,
+                ticks: { autoSkip: true, maxTicksLimit: 6, maxRotation: 45, minRotation: 45 }
+              }
             }
-
-            new Chart(document.getElementById(meta.chart), {
-              type: "line",
-              data: { labels, datasets: [{ data: prices, borderColor: "#ff3399", fill: false, tension: 0.2 }] },
-              options: { plugins: { legend: { display: false } } }
-            });
           }
-
-          else if (rec.provider === "FMP") {
-            const last = rec.meta.regularMarketPrice;
-            const pct = rec.meta.changesPercentage || 0;
-
-            el.innerHTML = `
-              <span style="color:${pct >= 0 ? 'green' : 'red'};">${pct.toFixed(5)}% Δ</span>
-              ${formatNumber(last, meta.type)}
-              <span class="source">Source: FMP (fallback)</span>
-            `;
-
-            new Chart(document.getElementById(meta.chart), {
-              type: "line",
-              data: { labels: ["Now"], datasets: [{ data: [last], borderColor: "#999", fill: false }] },
-              options: { plugins: { legend: { display: false } } }
-            });
-          }
-        }
-      } catch (e) {
-        console.error("Indexes fetch failed", e);
+        });
+      } catch (err) {
+        console.error("Backend error", symbol, err);
+        document.getElementById(elementId).innerText = "Error";
       }
     }
 
-    loadFred();
-    loadIndexes();
+    // US Indexes
+    fetchBackend("^GSPC", "sp500", "sp500Chart");
+    fetchBackend("^DJI", "dji", "djiChart");
+    fetchBackend("^IXIC", "ixic", "ixicChart");
+    fetchBackend("^RUT", "rut", "rutChart");
+
+    // Global Indexes
+    fetchBackend("^FTSE", "ftse", "ftseChart");
+    fetchBackend("^N225", "n225", "n225Chart");
+    fetchBackend("^GDAXI","gdaxi","gdaxiChart");
+    fetchBackend("^HSI", "hsi", "hsiChart");
+    fetchBackend("000001.SS","shcomp","shcompChart");
   </script>
 </body>
 </html>
