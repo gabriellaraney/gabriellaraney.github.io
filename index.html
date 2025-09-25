@@ -6,6 +6,34 @@
   <title>Cute Economic Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .section-header {
+      display: inline-block;
+      background: #ffe6f2;
+      color: #b30059;
+      font-size: 1.3rem;
+      font-weight: bold;
+      padding: 0.4rem 1rem;
+      border-radius: 12px;
+      margin: 2rem 1rem 1rem;
+    }
+    .sub-header {
+      display: inline-block;
+      background: #f2f2f2;
+      color: #555;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 0.3rem 0.8rem;
+      border-radius: 10px;
+      margin: 1.5rem 1rem 1rem;
+    }
+    .ticker {
+      font-size: 0.75rem;
+      color: #777;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -20,26 +48,31 @@
   <div class="container">
     <div class="card">
       <h2>GDP (USA)</h2>
+      <span class="ticker">[GDP]</span>
       <p id="gdp" class="value">Loading...</p>
       <canvas id="gdpChart"></canvas>
     </div>
     <div class="card">
       <h2>Unemployment (USA)</h2>
+      <span class="ticker">[UNRATE]</span>
       <p id="unrate" class="value">Loading...</p>
       <canvas id="unrateChart"></canvas>
     </div>
     <div class="card">
       <h2>CPI Inflation (YoY, USA)</h2>
+      <span class="ticker">[CPIAUCSL]</span>
       <p id="cpi" class="value">Loading...</p>
       <canvas id="cpiChart"></canvas>
     </div>
     <div class="card">
       <h2>PCE Inflation (YoY, USA)</h2>
+      <span class="ticker">[PCEPI]</span>
       <p id="pce" class="value">Loading...</p>
       <canvas id="pceChart"></canvas>
     </div>
     <div class="card">
       <h2>PPI Inflation (YoY, USA)</h2>
+      <span class="ticker">[PPIACO]</span>
       <p id="ppi" class="value">Loading...</p>
       <canvas id="ppiChart"></canvas>
     </div>
@@ -49,21 +82,25 @@
   <div class="container">
     <div class="card">
       <h2>SOFR (USA)</h2>
+      <span class="ticker">[SOFR]</span>
       <p id="sofr" class="value">Loading...</p>
       <canvas id="sofrChart"></canvas>
     </div>
     <div class="card">
       <h2>Fed Funds Rate (USA)</h2>
+      <span class="ticker">[FEDFUNDS]</span>
       <p id="fedfunds" class="value">Loading...</p>
       <canvas id="fedfundsChart"></canvas>
     </div>
     <div class="card">
       <h2>10Y Treasury Yield (USA)</h2>
+      <span class="ticker">[^TNX]</span>
       <p id="gs10" class="value">Loading...</p>
       <canvas id="gs10Chart"></canvas>
     </div>
     <div class="card">
-      <h2>5Y Inflation Expectation (Proxy: TIPS, USA)</h2>
+      <h2>5Y Inflation Expectation (USA)</h2>
+      <span class="ticker">[TIP]</span>
       <p id="t5yie" class="value">Loading...</p>
       <canvas id="t5yieChart"></canvas>
     </div>
@@ -76,21 +113,25 @@
   <div class="container">
     <div class="card">
       <h2>S&P 500 (USA)</h2>
+      <span class="ticker">[^GSPC]</span>
       <p id="sp500" class="value">Loading...</p>
       <canvas id="sp500Chart"></canvas>
     </div>
     <div class="card">
       <h2>Dow Jones (USA)</h2>
+      <span class="ticker">[^DJI]</span>
       <p id="dji" class="value">Loading...</p>
       <canvas id="djiChart"></canvas>
     </div>
     <div class="card">
       <h2>Nasdaq (USA)</h2>
+      <span class="ticker">[^IXIC]</span>
       <p id="ixic" class="value">Loading...</p>
       <canvas id="ixicChart"></canvas>
     </div>
     <div class="card">
       <h2>Russell 2000 (USA)</h2>
+      <span class="ticker">[^RUT]</span>
       <p id="rut" class="value">Loading...</p>
       <canvas id="rutChart"></canvas>
     </div>
@@ -100,26 +141,31 @@
   <div class="container">
     <div class="card">
       <h2>FTSE 100 (UK)</h2>
+      <span class="ticker">[^FTSE]</span>
       <p id="ftse" class="value">Loading...</p>
       <canvas id="ftseChart"></canvas>
     </div>
     <div class="card">
       <h2>Nikkei 225 (Japan)</h2>
+      <span class="ticker">[^N225]</span>
       <p id="n225" class="value">Loading...</p>
       <canvas id="n225Chart"></canvas>
     </div>
     <div class="card">
       <h2>DAX (Germany)</h2>
+      <span class="ticker">[^GDAXI]</span>
       <p id="gdaxi" class="value">Loading...</p>
       <canvas id="gdaxiChart"></canvas>
     </div>
     <div class="card">
       <h2>Hang Seng (Hong Kong)</h2>
+      <span class="ticker">[^HSI]</span>
       <p id="hsi" class="value">Loading...</p>
       <canvas id="hsiChart"></canvas>
     </div>
     <div class="card">
       <h2>Shanghai Composite (China)</h2>
+      <span class="ticker">[000001.SS]</span>
       <p id="shcomp" class="value">Loading...</p>
       <canvas id="shcompChart"></canvas>
     </div>
@@ -127,7 +173,6 @@
 
   <!-- Scripts -->
   <script>
-    // --- Last updated ---
     document.getElementById("lastUpdated").innerText =
       "Last updated: " + new Date().toLocaleString();
 
@@ -136,8 +181,7 @@
       switch (type) {
         case "money": return `$${(value/1000).toFixed(1)}T`;
         case "percent": return value.toFixed(2) + "%";
-        case "index":
-          return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         default: return value.toFixed(2);
       }
     }
@@ -151,9 +195,7 @@
         let obs = (data.observations || [])
           .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)))
           .map(o => ({ date: o.date, value: parseFloat(o.value) }));
-        if (obs.length === 0) {
-          document.getElementById(elementId).innerText = "No data"; return;
-        }
+        if (obs.length === 0) { document.getElementById(elementId).innerText = "No data"; return; }
         if (transform === "yoy") {
           const yoy = [];
           for (let i = 12; i < obs.length; i++) {
@@ -171,8 +213,8 @@
         const values = recent.map(o => o.value);
         new Chart(document.getElementById(chartId), {
           type: "line",
-          data: { labels, datasets: [{ label: seriesId, data: values, borderColor: "#cc0066", fill: false, tension: 0.2 }] },
-          options: { scales: { x: { display: false } } }
+          data: { labels, datasets: [{ data: values, borderColor: "#cc0066", fill: false, tension: 0.2 }] },
+          options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
         });
       } catch (err) {
         console.error("FRED error", seriesId, err);
@@ -194,16 +236,14 @@
         if (showYTD) {
           const pctChange = ((lastVal - firstVal) / firstVal) * 100;
           document.getElementById(elementId).innerHTML =
-            `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
-              ${pctChange.toFixed(2)}% YTD
-            </span><br>${formatNumber(lastVal, displayType)}`;
+            `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">${pctChange.toFixed(2)}% YTD</span><br>${formatNumber(lastVal, displayType)}`;
         } else {
           document.getElementById(elementId).innerText = formatNumber(lastVal, displayType);
         }
         new Chart(document.getElementById(chartId), {
           type: "line",
-          data: { labels: timestamps, datasets: [{ label: symbol, data: pricesRaw, borderColor: "#ff3399", fill: false, tension: 0.2 }] },
-          options: { scales: { x: { display: false } } }
+          data: { labels: timestamps, datasets: [{ data: pricesRaw, borderColor: "#ff3399", fill: false, tension: 0.2 }] },
+          options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
         });
       } catch (err) {
         console.error("Yahoo error", symbol, err);
