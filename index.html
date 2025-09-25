@@ -94,36 +94,59 @@
 
     // Fetch FRED data
     async function fetchFRED(seriesId, elementId, chartId) {
-      try {
-        const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
-        const res = await fetch(url);
-        const data = await res.json();
-        const observations = data.observations.filter(o => o.value !== ".").slice(-20);
-        const labels = observations.map(o => o.date);
-        const values = observations.map(o => parseFloat(o.value));
+    try {
+      const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Network response was not ok");
+      const data = await res.json();
 
-        // Latest value
-        document.getElementById(elementId).innerText = values.at(-1).toFixed(2);
-
-        // Chart
-        new Chart(document.getElementById(chartId), {
-          type: "line",
-          data: {
-            labels: labels,
-            datasets: [{
-              label: seriesId,
-              data: values,
-              borderColor: "#cc0066",
-              fill: false,
-              tension: 0.2
-            }]
-          },
-          options: { scales: { x: { display: false } } }
-        });
-      } catch (err) {
-        document.getElementById(elementId).innerText = "Error";
+      if (!data.observations) {
+        document.getElementById(elementId).innerText = "No data";
+        return;
       }
+
+      // Filter valid numeric values
+      const observations = data.observations
+        .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)))
+        .slice(-20);
+
+      if (observations.length === 0) {
+        document.getElementById(elementId).innerText = "No valid data";
+        return;
+      }
+
+      const labels = observations.map(o => o.date);
+      const values = observations.map(o => parseFloat(o.value));
+
+      // Latest value
+      document.getElementById(elementId).innerText = values.at(-1).toFixed(2);
+
+      // Chart
+      new Chart(document.getElementById(chartId), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: seriesId,
+            data: values,
+            borderColor: "#cc0066",
+            fill: false,
+            tension: 0.2
+          }]
+        },
+        options: {
+          scales: {
+            x: { display: false },
+            y: { beginAtZero: false }
+          }
+        }
+      });
+    } catch (err) {
+      console.error("FRED error for", seriesId, err);
+      document.getElementById(elementId).innerText = "Error";
     }
+  }
+
 
     // Fetch Alpha Vantage ETF data
     async function fetchAlpha(symbol, elementId, chartId) {
