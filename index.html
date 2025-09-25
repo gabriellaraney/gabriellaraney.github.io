@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Economic Dashboard</title>
+  <title>Cute Economic Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>Economic Dashboard</header>
+  <header>📊 Cute Economic Dashboard</header>
 
   <div class="container" id="data-container">
     <!-- FRED Economic Indicators -->
@@ -60,7 +60,7 @@
       <canvas id="rutChart"></canvas>
     </div>
 
-    <!-- Global Indexes via ETFs -->
+    <!-- Global Indexes -->
     <div class="card">
       <h2>FTSE 100 🇬🇧 (EWU)</h2>
       <p id="ftse" class="value">Loading...</p>
@@ -92,63 +92,56 @@
     const FRED_API_KEY = "c5d6f351f39d10c302ebc99648038d4a";
     const ALPHA_KEY = "6OHNKZTCLXM3OZKW";
 
-    // Fetch FRED data
+    // --- FRED Data ---
     async function fetchFRED(seriesId, elementId, chartId) {
-    try {
-      const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Network response was not ok");
-      const data = await res.json();
+      try {
+        const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Network response not ok");
+        const data = await res.json();
 
-      if (!data.observations) {
-        document.getElementById(elementId).innerText = "No data";
-        return;
-      }
-
-      // Filter valid numeric values
-      const observations = data.observations
-        .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)))
-        .slice(-20);
-
-      if (observations.length === 0) {
-        document.getElementById(elementId).innerText = "No valid data";
-        return;
-      }
-
-      const labels = observations.map(o => o.date);
-      const values = observations.map(o => parseFloat(o.value));
-
-      // Latest value
-      document.getElementById(elementId).innerText = values.at(-1).toFixed(2);
-
-      // Chart
-      new Chart(document.getElementById(chartId), {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [{
-            label: seriesId,
-            data: values,
-            borderColor: "#cc0066",
-            fill: false,
-            tension: 0.2
-          }]
-        },
-        options: {
-          scales: {
-            x: { display: false },
-            y: { beginAtZero: false }
-          }
+        if (!data.observations) {
+          document.getElementById(elementId).innerText = "No data";
+          return;
         }
-      });
-    } catch (err) {
-      console.error("FRED error for", seriesId, err);
-      document.getElementById(elementId).innerText = "Error";
+
+        const observations = data.observations
+          .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)));
+
+        if (observations.length === 0) {
+          document.getElementById(elementId).innerText = "No valid data";
+          return;
+        }
+
+        const lastObs = observations[observations.length - 1];
+        const lastValue = parseFloat(lastObs.value);
+        document.getElementById(elementId).innerText = lastValue.toFixed(2);
+
+        const recent = observations.slice(-20);
+        const labels = recent.map(o => o.date);
+        const values = recent.map(o => parseFloat(o.value));
+
+        new Chart(document.getElementById(chartId), {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: seriesId,
+              data: values,
+              borderColor: "#cc0066",
+              fill: false,
+              tension: 0.2
+            }]
+          },
+          options: { scales: { x: { display: false } } }
+        });
+      } catch (err) {
+        console.error("FRED error for", seriesId, err);
+        document.getElementById(elementId).innerText = "Error";
+      }
     }
-  }
 
-
-    // Fetch Alpha Vantage ETF data
+    // --- Alpha Vantage Data ---
     async function fetchAlpha(symbol, elementId, chartId) {
       try {
         const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${ALPHA_KEY}`;
@@ -160,13 +153,27 @@
           return;
         }
 
-        const labels = Object.keys(series).slice(0, 20).reverse();
-        const values = labels.map(date => parseFloat(series[date]["4. close"]));
+        const allDates = Object.keys(series).sort(); // ascending
+        const yearStart = new Date(new Date().getFullYear(), 0, 1);
+        const ytdDates = allDates.filter(d => new Date(d) >= yearStart);
 
-        // Latest value
-        document.getElementById(elementId).innerText = values.at(-1).toFixed(2);
+        if (ytdDates.length === 0) {
+          document.getElementById(elementId).innerText = "No YTD data";
+          return;
+        }
 
-        // Chart
+        const values = ytdDates.map(date => parseFloat(series[date]["4. close"]));
+        const labels = ytdDates;
+
+        const firstValue = values[0];
+        const lastValue = values[values.length - 1];
+        const pctChange = ((lastValue - firstValue) / firstValue) * 100;
+
+        document.getElementById(elementId).innerHTML =
+          `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
+            ${pctChange.toFixed(2)}% YTD
+          </span><br>${lastValue.toFixed(2)}`;
+
         new Chart(document.getElementById(chartId), {
           type: "line",
           data: {
@@ -182,29 +189,30 @@
           options: { scales: { x: { display: false } } }
         });
       } catch (err) {
+        console.error("Alpha error for", symbol, err);
         document.getElementById(elementId).innerText = "Error";
       }
     }
 
-    // FRED indicators
+    // --- Load FRED Indicators ---
     fetchFRED("GDP", "gdp", "gdpChart");
     fetchFRED("UNRATE", "unrate", "unrateChart");
     fetchFRED("CPIAUCSL", "cpi", "cpiChart");
     fetchFRED("GS10", "gs10", "gs10Chart");
     fetchFRED("T5YIE", "t5yie", "t5yieChart");
 
-    // U.S. Indexes (via ETFs)
-    fetchAlpha("SPY", "sp500", "sp500Chart");
-    fetchAlpha("DIA", "dji", "djiChart");
-    fetchAlpha("QQQ", "ixic", "ixicChart");
-    fetchAlpha("IWM", "rut", "rutChart");
+    // --- Load U.S. Indexes ---
+    fetchAlpha("SPY", "sp500", "sp500Chart");   // S&P 500
+    fetchAlpha("DIA", "dji", "djiChart");       // Dow
+    fetchAlpha("QQQ", "ixic", "ixicChart");     // Nasdaq
+    fetchAlpha("IWM", "rut", "rutChart");       // Russell 2000
 
-    // Global Indexes (via ETFs)
-    fetchAlpha("EWU", "ftse", "ftseChart");
-    fetchAlpha("EWJ", "n225", "n225Chart");
-    fetchAlpha("EWG", "gdaxi", "gdaxiChart");
-    fetchAlpha("EWH", "hsi", "hsiChart");
-    fetchAlpha("MCHI", "shcomp", "shcompChart");
+    // --- Load Global Indexes ---
+    fetchAlpha("EWU", "ftse", "ftseChart");     // UK FTSE
+    fetchAlpha("EWJ", "n225", "n225Chart");     // Japan Nikkei
+    fetchAlpha("EWG", "gdaxi", "gdaxiChart");   // Germany DAX
+    fetchAlpha("EWH", "hsi", "hsiChart");       // Hong Kong Hang Seng
+    fetchAlpha("MCHI", "shcomp", "shcompChart");// China
   </script>
 </body>
 </html>
