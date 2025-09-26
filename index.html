@@ -104,7 +104,7 @@
 
   // ---------- Yahoo fetch (already backend) ----------
   async function fetchBackend(symbol, elementId, chartId, options = {}) {
-    const { displayType="index", showYTD=true } = options;
+    const { displayType = "index", showYTD = true } = options;
     try {
       const url = `https://economic-dashboard-backend.onrender.com/quote/${encodeURIComponent(symbol)}`;
       const res = await fetch(url);
@@ -114,18 +114,14 @@
       const prices = data.history.values;
       const dates = data.history.dates;
 
-      const jan1Index = dates.findIndex(d => d.startsWith(new Date().getFullYear() + "-01-"));
-      const firstVal = jan1Index >= 0 ? prices[jan1Index] : prices[0];
-      const lastVal = prices[prices.length - 1];
-
-      if (showYTD) {
-        const pctChange = ((lastVal - firstVal) / firstVal) * 100;
+      if (showYTD && typeof data.ytd_change === "number") {
+        const pctChange = data.ytd_change;
         document.getElementById(elementId).innerHTML =
           `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
             ${pctChange.toFixed(2)}% YTD
-          </span><br>${formatNumber(lastVal, displayType)}`;
+          </span><br>${formatNumber(data.latest, displayType)}`;
       } else {
-        document.getElementById(elementId).innerText = formatNumber(lastVal, displayType);
+        document.getElementById(elementId).innerText = formatNumber(data.latest, displayType);
       }
 
       new Chart(document.getElementById(chartId), {
@@ -147,15 +143,19 @@
 
   // ---------- Load FRED Data ----------
   // ---------- Load FRED Data ----------
-  fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });
+  // Growth & Inflation
+  fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });            // Nominal GDP (billions)
   fetchFRED("UNRATE", "unrate", "unrateChart", { displayType: "percent" });
   fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
   fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
   fetchFRED("PPIACO", "ppi", "ppiChart", { displayType: "percent", transform: "yoy" });
-  fetchFRED("SOFRON", "sofr", "sofrChart", { displayType: "percent" });
+
+  // Rates & Expectations
+  fetchFRED("SOFR", "sofr", "sofrChart", { displayType: "percent" });       // Overnight rate (daily)
   fetchFRED("FEDFUNDS", "fedfunds", "fedfundsChart", { displayType: "percent" });
   fetchFRED("GS10", "gs10", "gs10Chart", { displayType: "percent" });
   fetchFRED("T5YIE", "t5yie", "t5yieChart", { displayType: "percent" });
+
 
 
   // ---------- Load Yahoo Indexes ----------
