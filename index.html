@@ -58,13 +58,17 @@
   function formatNumber(value, type="number") {
     if (value == null || isNaN(value)) return "N/A";
     switch (type) {
-      case "money": return `$${(value/1000).toFixed(2)}T`;
-      case "percent": return value.toFixed(2) + "%";
-      case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      default: return value.toFixed(2);
+      case "money": 
+        return `$${(value / 1000).toFixed(2)}T`; // GDP in trillions
+      case "percent": 
+        return value.toFixed(2) + "%";
+      case "index": 
+        return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      default: 
+        return value.toFixed(2);
     }
   }
-
+  
   // ---------- FRED fetch (via backend now) ----------
   async function fetchFRED(seriesId, elementId, chartId, options = {}) {
   const { displayType="number", transform=null } = options;
@@ -142,14 +146,17 @@
   }
 
   // ---------- Load FRED Data ----------
+  // ---------- Load FRED Data ----------
   fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });
   fetchFRED("UNRATE", "unrate", "unrateChart", { displayType: "percent" });
   fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
   fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
   fetchFRED("PPIACO", "ppi", "ppiChart", { displayType: "percent", transform: "yoy" });
-  fetchFRED("SOFR", "sofr", "sofrChart", { displayType: "percent" });
+  fetchFRED("SOFRON", "sofr", "sofrChart", { displayType: "percent" });
   fetchFRED("FEDFUNDS", "fedfunds", "fedfundsChart", { displayType: "percent" });
+  fetchFRED("GS10", "gs10", "gs10Chart", { displayType: "percent" });
   fetchFRED("T5YIE", "t5yie", "t5yieChart", { displayType: "percent" });
+
 
   // ---------- Load Yahoo Indexes ----------
   fetchBackend("^GSPC", "sp500", "sp500Chart");
