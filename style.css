@@ -1,52 +1,115 @@
+/* Layout */
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #fff0f6;
-  color: #333;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: #fff;
+  color: #222;
   margin: 0;
   padding: 0;
 }
 
 header {
-  background: #ff99cc;
+  background: #ffe6f2;
+  color: #b30059;
   padding: 1rem;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: bold;
-  color: white;
   text-align: center;
 }
 
+#lastUpdated {
+  font-size: 0.9rem;
+  font-weight: normal;
+  margin-top: 0.3rem;
+}
+
+.badge {
+  display: inline-block;
+  background: #fff0f7;
+  color: #b30059;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid #ffb3d9;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+/* Sections */
+.section-header {
+  display: inline-block;
+  background: #ffe6f2;
+  color: #b30059;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  margin: 2rem 1rem 0.5rem;
+}
+
+.sub-header {
+  display: inline-block;
+  background: #f2f2f2;
+  color: #555;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.3rem 0.8rem;
+  border-radius: 10px;
+  margin: 0 1rem 1rem;
+}
+
+/* Cards */
 .container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
-  padding: 1rem;
+  margin: 1rem;
 }
 
 .card {
-  background: white;
+  background: #fff;
+  border: 1px solid #f2f2f2;
+  border-radius: 14px;
   padding: 1rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  width: 280px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  position: relative;
 }
 
 .card h2 {
-  color: #cc0066;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: #333;
 }
 
 .value {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0.3rem 0;
+  color: #222;
 }
 
-.section-header {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin: 2rem 0 1rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 2px solid #eee;
-  color: #444;
+.value span {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
 }
 
+/* Ticker in top-right corner */
+.ticker-tag {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.75rem;
+  background: #f8dff0;
+  color: #b30059;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* Source text */
+.source {
+  font-size: 0.75rem;
+  color: #777;
+  display: block;
+  margin-top: 0.3rem;
+}
