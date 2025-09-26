@@ -162,11 +162,9 @@
 
   // Rates & Expectations
   fetchFRED("SOFR", "sofr", "sofrChart", { displayType: "percent" });       // Overnight rate (daily)
-  fetchFRED("FEDFUNDS", "fedfunds", "fedfundsChart", { displayType: "percent" });
-  fetchFRED("GS10", "gs10", "gs10Chart", { displayType: "percent" });
-  fetchFRED("T5YIE", "t5yie", "t5yieChart", { displayType: "percent" });
-
-
+  fetchFRED("DFF",  "fedfunds", "fedfundsChart", { displayType: "percent" }); // daily effective FF rate
+  fetchFRED("DGS10","gs10",     "gs10Chart",     { displayType: "percent" }); // daily 10Y
+  fetchFRED("T5YIE","t5yie",    "t5yieChart",    { displayType: "percent" }); // daily 5Y BEI
 
   // ---------- Load Yahoo Indexes ----------
   fetchBackend("^GSPC", "sp500", "sp500Chart");
