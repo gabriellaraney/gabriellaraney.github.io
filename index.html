@@ -51,6 +51,16 @@
     <div class="card"><h2>Shanghai Composite (China)</h2><p id="shcomp" class="value">Loading...</p><canvas id="shcompChart"></canvas></div>
   </div>
 
+  <!-- Exchange Rates -->
+   <h2 class="section-header">Exchange Rates</h2>
+  <div class="container">
+    <div class="card"><h2>EUR / USD</h2><p id="eurusd" class="value">Loading...</p><canvas id="eurusdChart"></canvas></div>
+    <div class="card"><h2>GBP / USD</h2><p id="gbpusd" class="value">Loading...</p><canvas id="gbpusdChart"></canvas></div>
+    <div class="card"><h2>JPY / USD</h2><p id="jpyusd" class="value">Loading...</p><canvas id="jpyusdChart"></canvas></div>
+    <div class="card"><h2>AUD / USD</h2><p id="audusd" class="value">Loading...</p><canvas id="audusdChart"></canvas></div>
+    <div class="card"><h2>CNY / USD</h2><p id="cnyusd" class="value">Loading...</p><canvas id="cnyusdChart"></canvas></div>
+  </div>
+
   <script>
   document.getElementById("lastUpdated").innerText =
     "Last updated: " + new Date().toLocaleString();
@@ -168,6 +178,13 @@
   fetchBackend("^GDAXI", "gdaxi", "gdaxiChart");
   fetchBackend("^HSI", "hsi", "hsiChart");
   fetchBackend("000001.SS", "shcomp", "shcompChart");
+  // ---------- Load Exchange Rates ----------
+  fetchBackend("EURUSD=X", "eurusd", "eurusdChart", { displayType: "index", showYTD: false });
+  fetchBackend("GBPUSD=X", "gbpusd", "gbpusdChart", { displayType: "index", showYTD: false });
+  fetchBackend("JPYUSD=X", "jpyusd", "jpyusdChart", { displayType: "index", showYTD: false });
+  fetchBackend("AUDUSD=X", "audusd", "audusdChart", { displayType: "index", showYTD: false });
+  fetchBackend("CNYUSD=X", "cnyusd", "cnyusdChart", { displayType: "index", showYTD: false });
+
 </script>
 
 </body>
