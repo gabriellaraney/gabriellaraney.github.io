@@ -67,30 +67,36 @@
 
   // ---------- FRED fetch (via backend now) ----------
   async function fetchFRED(seriesId, elementId, chartId, options = {}) {
-    const { displayType="number", transform=null } = options;
-    try {
-      const url = `https://economic-dashboard-backend.onrender.com/fred/${seriesId}${transform ? "?transform=" + transform : ""}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
+  const { displayType="number", transform=null } = options;
+  try {
+    const url = `https://economic-dashboard-backend.onrender.com/fred/${seriesId}${transform ? "?transform=" + transform : ""}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
 
-      const latest = data.latest;
-      document.getElementById(elementId).innerText = formatNumber(latest, displayType);
+    // Use backend-provided history + latest
+    const obs = data.history;
+    const latest = data.latest;
 
-      const recent = data.history.slice(-20);
-      new Chart(document.getElementById(chartId), {
-        type: "line",
-        data: {
-          labels: recent.map(o => o.date),
-          datasets: [{ data: recent.map(o => o.value), borderColor: "#cc0066", fill: false, tension: 0.2 }]
-        },
-        options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
-      });
-    } catch (err) {
-      console.error("FRED error", seriesId, err);
-      document.getElementById(elementId).innerText = "Error";
-    }
+    // Show latest number
+    document.getElementById(elementId).innerText = formatNumber(latest, displayType);
+
+    // Chart recent values
+    const recent = obs.slice(-20);
+    new Chart(document.getElementById(chartId), {
+      type: "line",
+      data: {
+        labels: recent.map(o => o.date),
+        datasets: [{ data: recent.map(o => o.value), borderColor: "#cc0066", fill: false, tension: 0.2 }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
+    });
+  } catch (err) {
+    console.error("FRED error", seriesId, err);
+    document.getElementById(elementId).innerText = "Error";
   }
+}
+
 
   // ---------- Yahoo fetch (already backend) ----------
   async function fetchBackend(symbol, elementId, chartId, options = {}) {
