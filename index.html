@@ -52,122 +52,110 @@
   </div>
 
   <script>
-    document.getElementById("lastUpdated").innerText =
-      "Last updated: " + new Date().toLocaleString();
+  document.getElementById("lastUpdated").innerText =
+    "Last updated: " + new Date().toLocaleString();
 
-    // ---------- Helpers ----------
-    function formatNumber(value, type="number") {
-      if (value == null || isNaN(value)) return "N/A";
-      switch (type) {
-        case "money": return `$${(value/1000).toFixed(5)}T`;
-        case "percent": return value.toFixed(5) + "%";
-        case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 5, maximumFractionDigits: 5 });
-        default: return value.toFixed(5);
-      }
+  function formatNumber(value, type="number") {
+    if (value == null || isNaN(value)) return "N/A";
+    switch (type) {
+      case "money": return `$${(value/1000).toFixed(2)}T`;
+      case "percent": return value.toFixed(2) + "%";
+      case "index": return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      default: return value.toFixed(2);
     }
+  }
 
-    // ---------- FRED fetch ----------
-    const FRED_API_KEY = "c5d6f351f39d10c302ebc99648038d4a";
+  // ---------- FRED fetch (via backend now) ----------
+  async function fetchFRED(seriesId, elementId, chartId, options = {}) {
+    const { displayType="number", transform=null } = options;
+    try {
+      const url = `https://economic-dashboard-backend.onrender.com/fred/${seriesId}${transform ? "?transform=" + transform : ""}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
 
-    async function fetchFRED(seriesId, elementId, chartId, options = {}) {
-      const { displayType="number", transform=null } = options;
-      try {
-        const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`;
-        const res = await fetch(url);
-        const data = await res.json();
+      const latest = data.latest;
+      document.getElementById(elementId).innerText = formatNumber(latest, displayType);
 
-        let obs = (data.observations || [])
-          .filter(o => o.value !== "." && !isNaN(parseFloat(o.value)))
-          .map(o => ({ date: o.date, value: parseFloat(o.value) }));
+      const recent = data.history.slice(-20);
+      new Chart(document.getElementById(chartId), {
+        type: "line",
+        data: {
+          labels: recent.map(o => o.date),
+          datasets: [{ data: recent.map(o => o.value), borderColor: "#cc0066", fill: false, tension: 0.2 }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
+      });
+    } catch (err) {
+      console.error("FRED error", seriesId, err);
+      document.getElementById(elementId).innerText = "Error";
+    }
+  }
 
-        if (transform === "yoy") {
-          const yoy = [];
-          for (let i = 12; i < obs.length; i++) {
-            const prev = obs[i - 12].value;
-            const curr = obs[i].value;
-            yoy.push({ date: obs[i].date, value: ((curr - prev) / prev) * 100 });
-          }
-          obs = yoy;
+  // ---------- Yahoo fetch (already backend) ----------
+  async function fetchBackend(symbol, elementId, chartId, options = {}) {
+    const { displayType="index", showYTD=true } = options;
+    try {
+      const url = `https://economic-dashboard-backend.onrender.com/quote/${encodeURIComponent(symbol)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      const prices = data.history.values;
+      const dates = data.history.dates;
+
+      const jan1Index = dates.findIndex(d => d.startsWith(new Date().getFullYear() + "-01-"));
+      const firstVal = jan1Index >= 0 ? prices[jan1Index] : prices[0];
+      const lastVal = prices[prices.length - 1];
+
+      if (showYTD) {
+        const pctChange = ((lastVal - firstVal) / firstVal) * 100;
+        document.getElementById(elementId).innerHTML =
+          `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
+            ${pctChange.toFixed(2)}% YTD
+          </span><br>${formatNumber(lastVal, displayType)}`;
+      } else {
+        document.getElementById(elementId).innerText = formatNumber(lastVal, displayType);
+      }
+
+      new Chart(document.getElementById(chartId), {
+        type: "line",
+        data: {
+          labels: dates,
+          datasets: [{ data: prices, borderColor: "#ff3399", fill: false, tension: 0.2 }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { x: { display: true, ticks: { autoSkip: true, maxTicksLimit: 6 } } }
         }
-
-        const latest = obs[obs.length - 1]?.value;
-        document.getElementById(elementId).innerText = formatNumber(latest, displayType);
-
-        const recent = obs.slice(-20);
-        new Chart(document.getElementById(chartId), {
-          type: "line",
-          data: {
-            labels: recent.map(o => o.date),
-            datasets: [{ data: recent.map(o => o.value), borderColor: "#cc0066", fill: false, tension: 0.2 }]
-          },
-          options: { plugins: { legend: { display: false } }, scales: { x: { display: false } } }
-        });
-      } catch (err) {
-        console.error("FRED error", seriesId, err);
-        document.getElementById(elementId).innerText = "Error";
-      }
+      });
+    } catch (err) {
+      console.error("Backend error", symbol, err);
+      document.getElementById(elementId).innerText = "Error";
     }
+  }
 
-    // ---------- Backend fetch (Yahoo via Render) ----------
-    async function fetchBackend(symbol, elementId, chartId, options = {}) {
-      const { displayType="index", showYTD=true } = options;
-      try {
-        const url = `https://economic-dashboard-backend.onrender.com/quote/${encodeURIComponent(symbol)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
+  // ---------- Load FRED Data ----------
+  fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });
+  fetchFRED("UNRATE", "unrate", "unrateChart", { displayType: "percent" });
+  fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
+  fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
+  fetchFRED("PPIACO", "ppi", "ppiChart", { displayType: "percent", transform: "yoy" });
+  fetchFRED("SOFR", "sofr", "sofrChart", { displayType: "percent" });
+  fetchFRED("FEDFUNDS", "fedfunds", "fedfundsChart", { displayType: "percent" });
+  fetchFRED("T5YIE", "t5yie", "t5yieChart", { displayType: "percent" });
 
-        const prices = data.history.values;
-        const dates = data.history.dates;
-        const firstVal = prices[0], lastVal = prices[prices.length - 1];
+  // ---------- Load Yahoo Indexes ----------
+  fetchBackend("^GSPC", "sp500", "sp500Chart");
+  fetchBackend("^DJI", "dji", "djiChart");
+  fetchBackend("^IXIC", "ixic", "ixicChart");
+  fetchBackend("^RUT", "rut", "rutChart");
+  fetchBackend("^FTSE", "ftse", "ftseChart");
+  fetchBackend("^N225", "n225", "n225Chart");
+  fetchBackend("^GDAXI", "gdaxi", "gdaxiChart");
+  fetchBackend("^HSI", "hsi", "hsiChart");
+  fetchBackend("000001.SS", "shcomp", "shcompChart");
+</script>
 
-        if (showYTD) {
-          const pctChange = ((lastVal - firstVal) / firstVal) * 100;
-          document.getElementById(elementId).innerHTML =
-            `<span style="color:${pctChange >= 0 ? 'green' : 'red'};">
-              ${pctChange.toFixed(5)}% YTD
-            </span><br>${formatNumber(lastVal, displayType)}`;
-        } else {
-          document.getElementById(elementId).innerText = formatNumber(lastVal, displayType);
-        }
-
-        new Chart(document.getElementById(chartId), {
-          type: "line",
-          data: {
-            labels: dates,
-            datasets: [{ data: prices, borderColor: "#ff3399", fill: false, tension: 0.2 }]
-          },
-          options: {
-            plugins: { legend: { display: false } },
-            scales: { x: { display: true, ticks: { autoSkip: true, maxTicksLimit: 6 } } }
-          }
-        });
-      } catch (err) {
-        console.error("Backend error", symbol, err);
-        document.getElementById(elementId).innerText = "Error";
-      }
-    }
-
-    // ---------- Load FRED Data ----------
-    fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });
-    fetchFRED("UNRATE", "unrate", "unrateChart", { displayType: "percent" });
-    fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
-    fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
-    fetchFRED("PPIACO", "ppi", "ppiChart", { displayType: "percent", transform: "yoy" });
-    fetchFRED("SOFR", "sofr", "sofrChart", { displayType: "percent" });
-    fetchFRED("FEDFUNDS", "fedfunds", "fedfundsChart", { displayType: "percent" });
-    fetchFRED("T5YIE", "t5yie", "t5yieChart", { displayType: "percent" });
-
-    // ---------- Load Yahoo Indexes ----------
-    fetchBackend("^GSPC", "sp500", "sp500Chart");
-    fetchBackend("^DJI", "dji", "djiChart");
-    fetchBackend("^IXIC", "ixic", "ixicChart");
-    fetchBackend("^RUT", "rut", "rutChart");
-    fetchBackend("^FTSE", "ftse", "ftseChart");
-    fetchBackend("^N225", "n225", "n225Chart");
-    fetchBackend("^GDAXI", "gdaxi", "gdaxiChart");
-    fetchBackend("^HSI", "hsi", "hsiChart");
-    fetchBackend("000001.SS", "shcomp", "shcompChart");
-  </script>
 </body>
 </html>
