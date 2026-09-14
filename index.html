@@ -20,6 +20,8 @@
     <div class="card"><h2>GDP (US)</h2><p id="gdp" class="value">Loading...</p><canvas id="gdpChart"></canvas></div>
     <div class="card"><h2>Unemployment (US)</h2><p id="unrate" class="value">Loading...</p><canvas id="unrateChart"></canvas></div>
     <div class="card"><h2>CPI Inflation YoY (US)</h2><p id="cpi" class="value">Loading...</p><canvas id="cpiChart"></canvas></div>
+    <div class="card"><h2>Core CPI Inflation YoY (US)</h2><p id="corecpi" class="value">Loading...</p><canvas id="corecpiChart"></canvas>
+</div>
     <div class="card"><h2>PCE Inflation YoY (US)</h2><p id="pce" class="value">Loading...</p><canvas id="pceChart"></canvas></div>
     <div class="card"><h2>PPI Inflation YoY (US)</h2><p id="ppi" class="value">Loading...</p><canvas id="ppiChart"></canvas></div>
   </div>
@@ -152,11 +154,11 @@
   }
 
   // ---------- Load FRED Data ----------
-  // ---------- Load FRED Data ----------
   // Growth & Inflation
   fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });            // Nominal GDP (billions)
   fetchFRED("UNRATE", "unrate", "unrateChart", { displayType: "percent" });
   fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
+  fetchFRED("CPILFESL", "corecpi", "corecpiChart", {displayType: "percent", transform: "yoy"});
   fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
   fetchFRED("PPIFIS", "ppi", "ppiChart", { displayType: "percent", transform: "yoy" });
 
