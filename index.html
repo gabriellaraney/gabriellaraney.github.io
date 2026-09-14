@@ -154,11 +154,10 @@
   }
 
   // ---------- Load FRED Data ----------
-  // Growth & Inflation
   fetchFRED("GDP", "gdp", "gdpChart", { displayType: "money" });            // Nominal GDP (billions)
   fetchFRED("UNRATE", "unrate", "unrateChart", { displayType: "percent" });
-  fetchFRED("CPIAUCNS", "cpi", "cpiChart", {displayType: "percent", transform: "yoy"});
-  fetchFRED("CPILFENS", "corecpi", "corecpiChart", {displayType: "percent", transform: "yoy"});
+  fetchFRED("CPIAUCSL", "cpi", "cpiChart", { displayType: "percent", transform: "yoy" });
+  fetchFRED("CPILFESL", "corecpi", "corecpiChart", { displayType: "percent", transform: "yoy" });
   fetchFRED("PCEPI", "pce", "pceChart", { displayType: "percent", transform: "yoy" });
   fetchFRED("PPIFIS", "ppi", "ppiChart", { displayType: "percent", transform: "yoy" });
 
